@@ -1,0 +1,2445 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>MEGA STUDIO IA — Toutes les créations vidéo</title>
+<style>
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    :root {
+        --bg: #0a0a0c; --panel: #14141a; --panel-2: #1c1c24; --border: #2a2a35;
+        --ink: #f0f0f5; --ink-dim: #8888a0; --ink-faint: #555566;
+        --success: #2d8a4e; --error: #c0392b; --warn: #d4a017; --info: #4a6cf7;
+        --accent: #8b5cf6; --accent-2: #ec4899; --gold: #f4a261;
+        --radius: 12px;
+    }
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        background: var(--bg); color: var(--ink); min-height: 100vh;
+        padding: 1.5rem 1rem 6rem; font-size: 15px; line-height: 1.5;
+        max-width: 1000px; margin: 0 auto;
+        background-image:
+            radial-gradient(ellipse at top left, rgba(139,92,246,0.08), transparent 50%),
+            radial-gradient(ellipse at bottom right, rgba(236,72,153,0.06), transparent 50%);
+    }
+    header { margin-bottom: 1.5rem; text-align: center; }
+    h1 {
+        font-size: 1.6rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 0.3rem;
+        background: linear-gradient(135deg, var(--accent), var(--accent-2), var(--gold));
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    .subtitle { font-size: 0.8rem; color: var(--ink-dim); font-style: italic; }
+    .toast {
+        position: fixed; top: 1.5rem; left: 50%;
+        transform: translateX(-50%) translateY(-100px);
+        background: var(--ink); color: #0a0a0c;
+        padding: 0.85rem 1.4rem; border-radius: 10px;
+        font-size: 0.85rem; font-weight: 500;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        z-index: 1000; opacity: 0;
+        transition: transform 0.35s ease, opacity 0.35s ease;
+        max-width: 90vw; text-align: center;
+        display: flex; align-items: center; gap: 0.5rem;
+    }
+    .toast.visible { transform: translateX(-50%) translateY(0); opacity: 1; }
+    .toast.success { background: var(--success); color: #fff; }
+    .toast.error { background: var(--error); color: #fff; }
+    .toast.warn { background: var(--warn); color: #0a0a0c; }
+    .toast .toast-icon { font-size: 1rem; }
+    .info-banner {
+        background: linear-gradient(135deg, rgba(139,92,246,0.12), rgba(236,72,153,0.08));
+        border-left: 3px solid var(--accent);
+        padding: 0.85rem 1rem; border-radius: 8px;
+        font-size: 0.78rem; color: #d8d0f5;
+        margin-bottom: 1rem; line-height: 1.5;
+    }
+    .info-banner strong { color: var(--ink); }
+    .section {
+        background: var(--panel); border: 1px solid var(--border);
+        border-radius: var(--radius); margin-bottom: 1rem;
+        overflow: hidden;
+    }
+    .section-header {
+        padding: 0.9rem 1.1rem; cursor: pointer; user-select: none;
+        display: flex; justify-content: space-between; align-items: center;
+        gap: 0.5rem;
+    }
+    .section-header:active { background: var(--panel-2); }
+    .section-title {
+        font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em;
+        color: var(--ink-dim); font-weight: 600;
+    }
+    .section-title .badge {
+        display: inline-block; margin-left: 0.4rem; padding: 0.1rem 0.4rem;
+        background: var(--accent); color: #fff; border-radius: 10px;
+        font-size: 0.65rem; letter-spacing: 0;
+    }
+    .section-title .badge.soft { background: var(--info); }
+    .section-title .badge.gold { background: var(--gold); color: #0a0a0c; }
+    .section-header .chevron {
+        font-size: 0.7rem; color: var(--ink-faint); transition: transform 0.2s;
+    }
+    .section.open .section-header .chevron { transform: rotate(180deg); }
+    .section-body { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+    .section.open .section-body { max-height: 8000px; }
+    .section-content { padding: 0 1.1rem 1.1rem; }
+    .api-panel {
+        background: var(--panel); border: 1px solid var(--border);
+        border-radius: var(--radius); padding: 1rem 1.2rem;
+        margin-bottom: 1rem; transition: border-color 0.3s;
+    }
+    .api-panel.ok { border-color: var(--success); }
+    .api-key-input {
+        width: 100%; padding: 0.85rem 1rem;
+        border-radius: 8px; border: 1px solid var(--border);
+        background: var(--panel-2); color: var(--ink);
+        font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+        font-size: 0.85rem; margin-bottom: 0.6rem;
+    }
+    .api-key-input:focus { outline: none; border-color: var(--accent); }
+    .api-save-btn {
+        width: 100%; padding: 0.8rem 1.2rem;
+        border-radius: 8px; border: none;
+        background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        color: #fff;
+        font-size: 0.9rem; font-weight: 600; font-family: inherit;
+        cursor: pointer; transition: opacity 0.2s, transform 0.1s;
+        margin-bottom: 0.6rem;
+    }
+    .api-save-btn:active { transform: scale(0.98); }
+    .api-status-line {
+        font-size: 0.75rem; padding: 0.55rem 0.85rem;
+        border-radius: 6px; margin-bottom: 0.5rem;
+        display: flex; align-items: center; gap: 0.5rem;
+        background: var(--panel-2); color: var(--ink-dim);
+        transition: all 0.3s;
+    }
+    .api-status-line.ok {
+        background: rgba(45, 138, 78, 0.15); color: var(--success); font-weight: 600;
+    }
+    .api-status-line .status-dot {
+        width: 8px; height: 8px; border-radius: 50%;
+        background: var(--ink-faint); flex-shrink: 0;
+        transition: background 0.3s;
+    }
+    .api-status-line.ok .status-dot { background: var(--success); }
+    .api-hint { font-size: 0.72rem; color: var(--ink-dim); margin-top: 0.4rem; }
+    .api-hint a { color: var(--gold); text-decoration: underline; }
+    .stat-line {
+        font-size: 0.72rem; color: var(--ink-dim); margin-top: 0.5rem;
+        padding: 0.4rem 0.6rem; background: var(--panel-2); border-radius: 6px;
+        display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.3rem;
+    }
+    .wake-status {
+        font-size: 0.72rem; padding: 0.5rem 0.7rem;
+        border-radius: 6px; margin-top: 0.4rem;
+        display: flex; justify-content: space-between; align-items: center;
+        background: rgba(74, 108, 247, 0.1); color: var(--info);
+        flex-wrap: wrap; gap: 0.4rem;
+    }
+    .wake-status.active { background: rgba(45, 138, 78, 0.15); color: var(--success); }
+    .wake-status.warn { background: rgba(212, 160, 23, 0.15); color: var(--warn); }
+    .wake-status button {
+        background: transparent; border: 1px solid currentColor;
+        color: inherit; padding: 0.25rem 0.6rem; border-radius: 6px;
+        font-size: 0.68rem; cursor: pointer; font-family: inherit;
+    }
+    .wake-status button:active { opacity: 0.6; }
+    .upload-zone {
+        border: 2px dashed var(--border); border-radius: var(--radius);
+        padding: 2rem 1rem; text-align: center; cursor: pointer;
+        transition: border-color 0.2s, background 0.2s; margin-bottom: 1rem;
+        background: var(--panel);
+    }
+    .upload-zone:active { border-color: var(--accent); background: var(--panel-2); }
+    .upload-zone.loading { pointer-events: none; opacity: 0.6; }
+    .upload-zone input[type="file"] { display: none; }
+    .upload-icon { font-size: 2.2rem; margin-bottom: 0.6rem; opacity: 0.7; }
+    .upload-text { font-size: 0.95rem; color: var(--ink); margin-bottom: 0.2rem; }
+    .upload-hint { font-size: 0.75rem; color: var(--ink-dim); }
+    .images-grid {
+        display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+        gap: 0.5rem; margin-bottom: 1rem;
+    }
+    .image-card {
+        position: relative; border-radius: 8px; overflow: hidden;
+        border: 1px solid var(--border); background: #000;
+        aspect-ratio: 9/16;
+    }
+    .image-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .image-card .remove-btn {
+        position: absolute; top: 4px; right: 4px;
+        background: rgba(0,0,0,0.75); color: #fff; border: none;
+        width: 22px; height: 22px; border-radius: 50%; font-size: 11px;
+        cursor: pointer; display: flex; align-items: center; justify-content: center;
+        line-height: 1;
+    }
+    textarea {
+        width: 100%; padding: 0.75rem 0.9rem; border-radius: 8px;
+        border: 1px solid var(--border); background: var(--panel-2);
+        color: var(--ink); font-family: inherit; font-size: 0.88rem;
+        min-height: 80px; resize: vertical;
+    }
+    textarea:focus { outline: none; border-color: var(--accent); }
+    .prompt-main {
+        width: 100%; padding: 0.85rem 1rem;
+        border-radius: 8px; border: 1px solid var(--border);
+        background: var(--panel-2); color: var(--ink);
+        font-family: inherit; font-size: 0.9rem;
+        min-height: 100px; resize: vertical; line-height: 1.5;
+    }
+    .prompt-main:focus { outline: none; border-color: var(--accent); }
+    .prompt-main-hint {
+        font-size: 0.72rem; color: var(--ink-dim);
+        margin-top: 0.5rem; line-height: 1.4;
+    }
+    .search-bar {
+        width: 100%; padding: 0.7rem 1rem;
+        border-radius: 8px; border: 1px solid var(--border);
+        background: var(--panel-2); color: var(--ink);
+        font-family: inherit; font-size: 0.85rem;
+        margin-bottom: 0.7rem;
+    }
+    .search-bar:focus { outline: none; border-color: var(--accent); }
+    .prompt-presets {
+        display: flex; flex-wrap: wrap; gap: 0.4rem;
+        margin-top: 0.7rem;
+    }
+    .prompt-preset {
+        padding: 0.35rem 0.7rem; border-radius: 16px;
+        border: 1px solid var(--border); background: var(--panel-2);
+        font-size: 0.72rem; cursor: pointer;
+        transition: all 0.15s; user-select: none;
+    }
+    .prompt-preset:active { transform: scale(0.96); }
+    .prompt-preset:hover { border-color: var(--accent); }
+    .category-tabs {
+        display: flex; gap: 0.3rem; overflow-x: auto;
+        padding-bottom: 0.6rem; margin-bottom: 0.6rem;
+        scrollbar-width: thin;
+        scrollbar-color: var(--border) transparent;
+    }
+    .category-tabs::-webkit-scrollbar { height: 4px; }
+    .category-tabs::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    .category-tab {
+        padding: 0.4rem 0.75rem; border-radius: 20px;
+        border: 1px solid var(--border); background: var(--panel-2);
+        font-size: 0.72rem; cursor: pointer; white-space: nowrap;
+        transition: all 0.15s; user-select: none;
+        flex-shrink: 0;
+    }
+    .category-tab:active { transform: scale(0.96); }
+    .category-tab.active {
+        background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        color: #fff; border-color: transparent; font-weight: 600;
+    }
+    .styles-grid {
+        display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 0.5rem;
+    }
+    .style-card {
+        padding: 0.7rem 0.8rem; border-radius: 8px;
+        border: 1px solid var(--border); background: var(--panel-2);
+        cursor: pointer; transition: all 0.15s;
+        display: flex; align-items: center; gap: 0.5rem;
+    }
+    .style-card:active { transform: scale(0.98); }
+    .style-card.selected {
+        background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        color: #fff; border-color: transparent;
+    }
+    .style-card .style-emoji { font-size: 1.2rem; flex-shrink: 0; }
+    .style-card .style-name { font-size: 0.78rem; font-weight: 500; line-height: 1.2; }
+    .style-card .style-desc { font-size: 0.63rem; opacity: 0.65; margin-top: 0.1rem; line-height: 1.2; }
+    .style-category-header {
+        grid-column: 1 / -1;
+        font-size: 0.7rem; font-weight: 700;
+        color: var(--gold); text-transform: uppercase;
+        letter-spacing: 0.08em;
+        padding: 0.7rem 0 0.4rem;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 0.4rem;
+    }
+    .style-category-header:first-child { padding-top: 0; border-bottom: none; }
+    .style-category-desc {
+        grid-column: 1 / -1;
+        font-size: 0.68rem; color: var(--ink-dim);
+        font-style: italic; margin-bottom: 0.4rem; line-height: 1.35;
+    }
+    .no-style-card {
+        grid-column: 1 / -1;
+        padding: 0.8rem 1rem;
+        border-radius: 8px;
+        border: 2px dashed var(--border);
+        background: transparent;
+        text-align: center; cursor: pointer;
+        transition: all 0.15s;
+        font-size: 0.82rem; color: var(--ink-dim);
+    }
+    .no-style-card:active { transform: scale(0.99); }
+    .no-style-card.selected {
+        border-color: var(--accent); border-style: solid;
+        background: var(--panel-2); color: var(--ink); font-weight: 600;
+    }
+    .control-row { margin-bottom: 0.9rem; }
+    .control-row:last-child { margin-bottom: 0; }
+    .control-label {
+        display: block; font-size: 0.72rem; color: var(--ink-dim);
+        margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.06em;
+        font-weight: 600;
+    }
+    select {
+        width: 100%; padding: 0.7rem 0.9rem; border-radius: 8px;
+        border: 1px solid var(--border); background: var(--panel-2);
+        color: var(--ink); font-family: inherit; font-size: 0.88rem;
+        -webkit-appearance: none; appearance: none;
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='%23f0f0f5' d='M0 0l5 6 5-6z'/></svg>");
+        background-repeat: no-repeat;
+        background-position: right 0.9rem center;
+        background-size: 10px;
+    }
+    select:focus { outline: none; border-color: var(--accent); }
+    .btn-primary {
+        width: 100%; padding: 1.1rem; border-radius: var(--radius);
+        border: none;
+        background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        color: #fff;
+        font-size: 1rem; font-weight: 700; font-family: inherit;
+        cursor: pointer; transition: opacity 0.2s, transform 0.1s;
+        margin-bottom: 1rem;
+        letter-spacing: 0.02em;
+        box-shadow: 0 4px 20px rgba(139,92,246,0.3);
+    }
+    .btn-primary:active:not(:disabled) { transform: scale(0.98); }
+    .btn-primary:disabled { opacity: 0.3; cursor: not-allowed; box-shadow: none; }
+    .btn-stop {
+        width: 100%; padding: 0.8rem; border-radius: var(--radius);
+        border: 1px solid var(--error); background: transparent;
+        color: var(--error); font-size: 0.85rem; font-weight: 600;
+        font-family: inherit; cursor: pointer; margin-bottom: 1rem;
+        display: none;
+    }
+    .btn-stop.visible { display: block; }
+    .queue { margin-top: 1rem; }
+    .queue-summary {
+        background: var(--panel); border: 1px solid var(--border);
+        border-radius: 8px; padding: 0.7rem 0.9rem; margin-bottom: 0.6rem;
+        font-size: 0.78rem; display: flex; justify-content: space-between;
+        align-items: center; flex-wrap: wrap; gap: 0.4rem;
+    }
+    .queue-summary .progress-text { color: var(--ink); font-weight: 600; }
+    .queue-summary .eta-text { color: var(--ink-dim); }
+    .queue-item {
+        display: flex; align-items: center; gap: 0.8rem;
+        padding: 0.7rem 0.8rem; border-radius: 8px;
+        border: 1px solid var(--border); margin-bottom: 0.4rem;
+        background: var(--panel); transition: border-color 0.3s, opacity 0.3s;
+        font-size: 0.82rem;
+    }
+    .queue-item.pending { opacity: 0.5; }
+    .queue-item.creating { border-color: var(--gold); }
+    .queue-item.processing { border-color: var(--accent); }
+    .queue-item.done { border-color: var(--success); }
+    .queue-item.failed { border-color: var(--error); }
+    .queue-item .q-icon { font-size: 1rem; width: 1.5rem; text-align: center; flex-shrink: 0; }
+    .queue-item .q-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .queue-item .q-status { font-size: 0.72rem; color: var(--ink-dim); text-align: right; flex-shrink: 0; max-width: 60%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .queue-more {
+        text-align: center; padding: 0.5rem; color: var(--ink-dim);
+        font-size: 0.75rem; font-style: italic;
+    }
+    .gallery { margin-top: 1.5rem; }
+    .gallery-grid {
+        display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 0.8rem;
+    }
+    .gallery-item {
+        border-radius: var(--radius); overflow: hidden;
+        border: 1px solid var(--border); background: #000;
+        animation: fadeIn 0.4s ease;
+    }
+    .gallery-item video { width: 100%; display: block; aspect-ratio: 9/16; object-fit: cover; }
+    .gallery-item .g-caption {
+        padding: 0.4rem 0.6rem; background: var(--panel);
+        font-size: 0.7rem; color: var(--ink-dim);
+    }
+    .status-bar {
+        position: fixed; bottom: 0; left: 0; right: 0;
+        background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        color: #fff; padding: 0.7rem 1rem;
+        font-size: 0.78rem; display: flex; align-items: center; gap: 0.6rem;
+        transform: translateY(100%); transition: transform 0.3s;
+        z-index: 100;
+    }
+    .status-bar.visible { transform: translateY(0); }
+    .status-bar .spinner {
+        width: 12px; height: 12px; border: 2px solid rgba(255,255,255,0.3);
+        border-top-color: #fff; border-radius: 50%;
+        animation: spin 0.8s linear infinite; flex-shrink: 0;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .hidden { display: none !important; }
+    .random-all-btn {
+        width: 100%; padding: 0.75rem;
+        border-radius: 8px;
+        border: 1px dashed var(--gold);
+        background: rgba(244, 162, 97, 0.08);
+        color: var(--gold);
+        font-size: 0.8rem; font-weight: 600; font-family: inherit;
+        cursor: pointer; margin-bottom: 0.7rem;
+        transition: all 0.2s;
+    }
+    .random-all-btn:active { transform: scale(0.98); }
+    .random-all-btn:hover { background: rgba(244, 162, 97, 0.15); }
+    .selected-info {
+        padding: 0.6rem 0.85rem;
+        background: var(--panel-2);
+        border-radius: 8px;
+        font-size: 0.75rem;
+        color: var(--ink-dim);
+        margin-bottom: 0.7rem;
+        border-left: 3px solid var(--accent);
+        line-height: 1.4;
+    }
+    .selected-info strong { color: var(--ink); }
+    #noSleepCanvas { position: fixed; top: 0; left: 0; width: 1px; height: 1px; opacity: 0.01; pointer-events: none; z-index: -1; }
+    #noSleepVideo { position: fixed; top: 0; left: 0; width: 1px; height: 1px; opacity: 0.01; pointer-events: none; z-index: -1; }
+</style>
+</head><body>
+
+<header>
+    <h1>✨ MEGA STUDIO IA</h1>
+    <p class="subtitle">Toutes les créations vidéo imaginables — un seul outil</p>
+</header>
+
+<div class="info-banner">
+    <strong>200+ styles, effets, genres, époques et transformations.</strong>
+    Ajoutez vos images, choisissez un univers (ou laissez l'IA choisir), et chaque photo devient une vidéo unique.
+    Format <strong>portrait 9:16</strong>.
+</div>
+
+<div class="api-panel" id="api-panel">
+    <input type="password" class="api-key-input" id="api-key-input"
+           placeholder="Collez votre clé API ici (sk-...)" autocomplete="off" spellcheck="false">
+    <button type="button" class="api-save-btn" id="api-save-btn">Enregistrer la clé</button>
+    <div class="api-status-line" id="api-status-line">
+        <span class="status-dot"></span>
+        <span id="api-status-text">Aucune clé API enregistrée</span>
+    </div>
+    <div class="api-hint">
+        Clé gratuite sur <a href="https://platform.agnes-ai.com" target="_blank">platform.agnes-ai.com</a> → Settings → API Keys
+    </div>
+    <div class="stat-line" id="stat-line">
+        <span>📊 Vitesse moyenne : <span id="stat-speed">en attente de données</span></span>
+        <span id="stat-samples">0 génération</span>
+    </div>
+    <div class="wake-status" id="wake-status">
+        <span id="wake-status-text">💤 Veille automatique</span>
+        <button type="button" id="wake-toggle-btn">Garder l'écran allumé</button>
+    </div>
+</div>
+
+<div class="upload-zone" id="upload-zone">
+    <input type="file" id="file-input" accept="image/*" multiple>
+    <div class="upload-icon">✨</div>
+    <div class="upload-text">Ajoutez vos images</div>
+    <div class="upload-hint">Autant que vous voulez — chacune deviendra une vidéo unique</div>
+</div>
+
+<div class="images-grid" id="images-grid"></div>
+
+<div class="section open" id="section-prompt">
+    <div class="section-header" data-toggle="section-prompt">
+        <span class="section-title">✍️ Votre vision <span class="badge soft">recommandé</span></span>
+        <span class="chevron">▼</span>
+    </div>
+    <div class="section-body">
+        <div class="section-content">
+            <textarea class="prompt-main" id="main-prompt"
+                placeholder="Décrivez ce que vous voulez voir. Par exemple :
+
+« Anime doucement chaque image comme si le temps s'arrêtait. Un vent léger fait bouger les cheveux. La lumière est chaude et dorée. Garde chaque sujet identique à la photo. »"></textarea>
+            <div class="prompt-presets" id="prompt-presets"></div>
+            <div class="prompt-main-hint">
+                💡 Ce prompt s'applique à <strong>toutes</strong> les images et se combine avec le style choisi.
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="section open" id="section-style">
+    <div class="section-header" data-toggle="section-style">
+        <span class="section-title">🎨 Univers & Style <span class="badge gold">200+ choix</span></span>
+        <span class="chevron">▼</span>
+    </div>
+    <div class="section-body">
+        <div class="section-content">
+            <button type="button" class="random-all-btn" id="random-all-btn">
+                🎲 Style + prompt + réglages aléatoires (surprise totale)
+            </button>
+            <input type="text" class="search-bar" id="style-search" placeholder="🔍 Rechercher un style (ex : anime, néon, foot…)">
+            <div class="category-tabs" id="category-tabs"></div>
+            <div class="styles-grid" id="styles-grid"></div>
+        </div>
+    </div>
+</div>
+
+<div class="section" id="section-tech">
+    <div class="section-header" data-toggle="section-tech">
+        <span class="section-title">📷 Réglages techniques</span>
+        <span class="chevron">▼</span>
+    </div>
+    <div class="section-body">
+        <div class="section-content">
+            <div class="control-row">
+                <label class="control-label">Durée de chaque vidéo</label>
+                <select id="duration-select">
+                    <option value="121">5 secondes</option>
+                    <option value="153" selected>6,4 secondes (recommandé)</option>
+                    <option value="241">10 secondes</option>
+                </select>
+            </div>
+            <div class="control-row">
+                <label class="control-label">Cadrage</label>
+                <select id="framing-select">
+                    <option value="random">Aléatoire</option>
+                    <option value="close">Très serré (gros plan)</option>
+                    <option value="medium">Moyen (buste)</option>
+                    <option value="wide">Large (plan large)</option>
+                </select>
+            </div>
+            <div class="control-row">
+                <label class="control-label">Intensité du mouvement</label>
+                <select id="intensity-select">
+                    <option value="random">Aléatoire</option>
+                    <option value="subtle">Subtile</option>
+                    <option value="moderate" selected>Modérée</option>
+                    <option value="strong">Forte</option>
+                </select>
+            </div>
+            <div class="control-row">
+                <label class="control-label">Vitesse de caméra</label>
+                <select id="camera-select">
+                    <option value="random">Aléatoire</option>
+                    <option value="slow">Ralenti dramatique</option>
+                    <option value="medium">Normale</option>
+                    <option value="fast">Rapide / frénétique</option>
+                </select>
+            </div>
+            <div class="control-row">
+                <label class="control-label">Mode de transformation</label>
+                <select id="transform-mode">
+                    <option value="auto" selected>Auto (selon le style choisi)</option>
+                    <option value="preserve">Préserver le sujet à l'identique</option>
+                    <option value="stylize">Transformer radicalement l'image</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="selected-info" id="selected-info"></div>
+
+<button type="button" class="btn-primary" id="generate-btn" disabled>
+    Créer les vidéos
+</button>
+
+<button type="button" class="btn-stop" id="stop-btn">
+    ⏹ Arrêter la génération
+</button>
+
+<div class="queue" id="queue" style="display:none;"></div>
+
+<div class="gallery" id="gallery" style="display:none;">
+    <div class="section-title" style="margin-bottom:0.8rem;">✨ Vidéos générées</div>
+    <div class="gallery-grid" id="gallery-grid"></div>
+</div>
+
+<div class="status-bar" id="status-bar">
+    <div class="spinner"></div>
+    <span id="status-text">Préparation…</span>
+</div>
+
+<div class="toast" id="toast">
+    <span class="toast-icon" id="toast-icon">✓</span>
+    <span id="toast-text">Message</span>
+</div>
+
+<canvas id="noSleepCanvas" width="2" height="2"></canvas>
+<video id="noSleepVideo" playsinline muted loop></video>
+
+<script>// ══════════════════════════════════════════════════════════════════
+// CONFIGURATION
+// ══════════════════════════════════════════════════════════════════
+const API_BASE = 'https://apihub.agnes-ai.com/v1';
+const POLL_BASE = 'https://apihub.agnes-ai.com/agnesapi';
+const MODEL_VIDEO = 'agnes-video-v2.0';
+const FRAME_RATE = 24;
+
+let createIntervalMs = 62000;
+const CREATE_INTERVAL_MIN = 62000;
+const CREATE_INTERVAL_MAX = 90000;
+const CREATE_INTERVAL_SAFE = 75000;
+
+const POLL_INTERVAL_SEC = 8;
+const MAX_POLL_ATTEMPTS = 100;
+
+const TIMING_CACHE_KEY = 'mega_timing_cache_v1';
+const API_KEY_STORAGE = 'agnes_api_key';
+const WAKE_LOCK_PREF = 'agnes_wakelock_enabled';
+
+const MAX_VISIBLE_QUEUE = 30;
+const MAX_IMAGE_SIZE = 12 * 1024 * 1024;
+const THUMBNAIL_MAX_WIDTH = 200;
+
+// ══════════════════════════════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════════════════════════════
+let toastTimeout = null;
+function showToast(message, type = 'success', duration = 2500) {
+    const toast = document.getElementById('toast');
+    const icon = document.getElementById('toast-icon');
+    const text = document.getElementById('toast-text');
+    if (!toast || !icon || !text) return;
+    toast.classList.remove('visible', 'success', 'error', 'warn');
+    void toast.offsetWidth;
+    const icons = { success: '✓', error: '✕', warn: '⚠' };
+    icon.textContent = icons[type] || '✓';
+    text.textContent = message;
+    toast.classList.add(type);
+    requestAnimationFrame(() => toast.classList.add('visible'));
+    if (toastTimeout) clearTimeout(toastTimeout);
+    toastTimeout = setTimeout(() => toast.classList.remove('visible'), duration);
+}
+
+// ══════════════════════════════════════════════════════════════════
+// ANTI-VEILLE
+// ══════════════════════════════════════════════════════════════════
+let wakeLockSentinel = null;
+let wakeLockEnabled = false;
+let canvasStream = null;
+let canvasInterval = null;
+
+function isWakeLockSupported() {
+    return 'wakeLock' in navigator && typeof navigator.wakeLock.request === 'function';
+}
+
+async function requestWakeLockAPI() {
+    if (!isWakeLockSupported()) return false;
+    try {
+        wakeLockSentinel = await navigator.wakeLock.request('screen');
+        wakeLockSentinel.addEventListener('release', () => {
+            wakeLockSentinel = null;
+            updateWakeStatus();
+        });
+        return true;
+    } catch (e) { return false; }
+}
+
+async function releaseWakeLockAPI() {
+    if (wakeLockSentinel) {
+        try { await wakeLockSentinel.release(); } catch (e) {}
+        wakeLockSentinel = null;
+    }
+}
+
+function startCanvasStream() {
+    if (canvasStream) return true;
+    try {
+        const canvas = document.getElementById('noSleepCanvas');
+        const video = document.getElementById('noSleepVideo');
+        if (!canvas || !video) return false;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return false;
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        if (typeof canvas.captureStream !== 'function') return false;
+        canvasStream = canvas.captureStream(1);
+        let toggle = false;
+        canvasInterval = setInterval(() => {
+            toggle = !toggle;
+            ctx.fillStyle = toggle ? '#000000' : '#010101';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }, 1000);
+        video.srcObject = canvasStream;
+        video.muted = true;
+        video.playsInline = true;
+        const playPromise = video.play();
+        if (playPromise && playPromise.catch) playPromise.catch(() => {});
+        return true;
+    } catch (e) { return false; }
+}
+
+function stopCanvasStream() {
+    if (canvasInterval) { clearInterval(canvasInterval); canvasInterval = null; }
+    const video = document.getElementById('noSleepVideo');
+    if (video) { try { video.pause(); video.srcObject = null; } catch (e) {} }
+    if (canvasStream) {
+        try { canvasStream.getTracks().forEach(t => t.stop()); } catch (e) {}
+        canvasStream = null;
+    }
+}
+
+async function activateWakeLock() {
+    let success = false;
+    if (isWakeLockSupported()) success = await requestWakeLockAPI();
+    if (!success) success = startCanvasStream();
+    if (!success && !canvasStream) success = startCanvasStream();
+    return success;
+}
+
+async function deactivateWakeLock() {
+    await releaseWakeLockAPI();
+    stopCanvasStream();
+}
+
+function updateWakeStatus() {
+    const el = document.getElementById('wake-status');
+    const txt = document.getElementById('wake-status-text');
+    const btn = document.getElementById('wake-toggle-btn');
+    if (!el || !txt || !btn) return;
+    el.classList.remove('active', 'warn');
+    const hasAnyMechanism = isWakeLockSupported() ||
+        (document.getElementById('noSleepCanvas')?.captureStream);
+    if (!hasAnyMechanism) {
+        el.classList.add('warn');
+        txt.textContent = '⚠️ Non supporté par ce navigateur';
+        btn.style.display = 'none';
+        return;
+    }
+    btn.style.display = 'inline-block';
+    const isActive = wakeLockSentinel !== null || canvasStream !== null;
+    if (wakeLockEnabled && isActive) {
+        el.classList.add('active');
+        txt.textContent = '✅ L\'écran reste allumé';
+        btn.textContent = 'Désactiver';
+    } else if (wakeLockEnabled && !isActive) {
+        el.classList.add('warn');
+        txt.textContent = '⏳ En attente (touchez la page)';
+        btn.textContent = 'Désactiver';
+    } else {
+        txt.textContent = '💤 Veille automatique';
+        btn.textContent = 'Garder l\'écran allumé';
+    }
+}
+
+async function toggleWakeLock() {
+    if (wakeLockEnabled) {
+        wakeLockEnabled = false;
+        await deactivateWakeLock();
+        try { localStorage.setItem(WAKE_LOCK_PREF, '0'); } catch (e) {}
+        showToast('Veille automatique réactivée', 'warn');
+    } else {
+        wakeLockEnabled = true;
+        const ok = await activateWakeLock();
+        try { localStorage.setItem(WAKE_LOCK_PREF, '1'); } catch (e) {}
+        if (ok) showToast('L\'écran va rester allumé', 'success');
+        else showToast('Activez manuellement dans les réglages', 'warn');
+    }
+    updateWakeStatus();
+}
+
+document.addEventListener('visibilitychange', async () => {
+    if (document.visibilityState === 'visible' && wakeLockEnabled) {
+        await activateWakeLock();
+        updateWakeStatus();
+    }
+});
+
+async function ensureWakeLockActive() {
+    if (!wakeLockEnabled) return;
+    if (wakeLockSentinel === null && canvasStream === null) {
+        await activateWakeLock();
+        updateWakeStatus();
+    }
+}
+
+// ══════════════════════════════════════════════════════════════════
+// CACHE DES TEMPS
+// ══════════════════════════════════════════════════════════════════
+function loadTimingCache() {
+    try { return JSON.parse(localStorage.getItem(TIMING_CACHE_KEY) || '{}'); }
+    catch (e) { return {}; }
+}
+function saveTimingCache(cache) {
+    try { localStorage.setItem(TIMING_CACHE_KEY, JSON.stringify(cache)); } catch (e) {}
+}
+function recordGenerationTime(numFrames, durationMs) {
+    const cache = loadTimingCache();
+    const key = String(numFrames);
+    if (!cache[key]) cache[key] = [];
+    cache[key].push(durationMs);
+    if (cache[key].length > 10) cache[key] = cache[key].slice(-10);
+    saveTimingCache(cache);
+    updateTimingDisplay();
+}
+function estimateGenerationTime(numFrames) {
+    const cache = loadTimingCache();
+    const samples = cache[String(numFrames)];
+    if (samples && samples.length > 0) {
+        const sorted = [...samples].sort((a, b) => a - b);
+        const mid = Math.floor(sorted.length / 2);
+        return sorted.length % 2 === 0 ? (sorted[mid-1] + sorted[mid]) / 2 : sorted[mid];
+    }
+    return 30000 + numFrames * 500;
+}
+function updateTimingDisplay() {
+    const cache = loadTimingCache();
+    const all = Object.values(cache).flat();
+    const speedEl = document.getElementById('stat-speed');
+    const samplesEl = document.getElementById('stat-samples');
+    if (!speedEl || !samplesEl) return;
+    if (all.length === 0) {
+        speedEl.textContent = 'en attente de données';
+        samplesEl.textContent = '0 génération';
+        return;
+    }
+    const avg = all.reduce((a, b) => a + b, 0) / all.length;
+    speedEl.textContent = (avg / 1000).toFixed(1) + ' s en moyenne';
+    samplesEl.textContent = all.length + ' génération' + (all.length > 1 ? 's' : '');
+}
+
+// ══════════════════════════════════════════════════════════════════
+// PRESETS DE PROMPT
+// ══════════════════════════════════════════════════════════════════
+const PROMPT_PRESETS = [
+    { label: '🌬️ Vent léger', text: 'Anime doucement l\'image comme si le temps s\'arrêtait. Un vent léger fait bouger les cheveux et les feuilles. La lumière est chaude et dorée. Garde chaque sujet exactement identique à la photo originale.' },
+    { label: '💭 Rêve éveillé', text: 'Prolonge cette image dans un rêve éveillé. Mouvements très lents, respiration visible, lumière douce et diffuse. Atmosphère onirique et paisible. Le sujet reste identique à la photo.' },
+    { label: '🌅 Golden hour', text: 'Anime cette image avec une lumière dorée de fin de journée. Longues ombres chaudes, reflets lumineux, ambiance cinématographique. Le sujet reste identique à la photo originale.' },
+    { label: '🌙 Nuit calme', text: 'Prolonge cette image dans une ambiance nocturne paisible. Lumière bleutée, reflets argentés, mouvement très lent. Le sujet reste identique à la photo.' },
+    { label: '⚫ Noir & blanc', text: 'Anime cette image en noir et blanc élégant. Contraste doux, grain subtil, ambiance photographique classique. Le sujet reste identique à la photo.' },
+    { label: '🎬 Cinématique', text: 'Anime cette image avec une esthétique cinématographique. Mouvement de caméra lent, lumière dramatique, profondeur de champ. Le sujet reste identique à la photo originale.' },
+    { label: '🌫️ Brume poétique', text: 'Prolonge cette image dans une brume douce et poétique. Halo lumineux, particules flottantes, atmosphère mystérieuse. Le sujet reste identique à la photo.' },
+    { label: '💥 Action explosive', text: 'Transforme cette image en scène d\'action explosive. Mouvements rapides, éclairs, ondes de choc, débris volants. Style cinématographique hollywoodien. Le sujet reste identique à la photo.' },
+    { label: '😢 Émotion triste', text: 'Anime cette image avec une émotion de tristesse. Une larme coule lentement, le regard se baisse, la lumière est douce et bleutée. Le sujet reste identique à la photo.' },
+    { label: '😊 Joie lumineuse', text: 'Anime cette image avec une émotion de joie. Sourire qui s\'élargit, yeux qui brillent, lumière chaude et dorée, mouvement léger et joyeux. Le sujet reste identique à la photo.' }
+];
+
+// ══════════════════════════════════════════════════════════════════
+// CATÉGORIES
+// ══════════════════════════════════════════════════════════════════
+const CATEGORIES = [
+    { id: 'ambiance', name: '✨ Ambiance', desc: 'Préserve votre image, change seulement l\'atmosphère.' },
+    { id: 'cartoon', name: '🎨 Cartoon', desc: 'Transforme radicalement en style dessin animé.' },
+    { id: 'anime', name: '🌸 Anime', desc: 'Styles japonais, manga, anime.' },
+    { id: 'cinema', name: '🎬 Cinéma', desc: 'Styles cinématographiques hollywoodiens.' },
+    { id: 'action', name: '🥋 Action', desc: 'Kung fu, karaté, Matrix, arts martiaux.' },
+    { id: 'dance', name: '💃 Danse', desc: 'Hip-hop, ballet, salsa, K-pop.' },
+    { id: 'camera', name: '🎥 Caméra', desc: 'Dolly zoom, orbite, drone, steadicam.' },
+    { id: 'cut', name: '✂️ Cut', desc: 'Jump cut, match cut, glitch.' },
+    { id: 'powers', name: '💥 Superpouvoirs', desc: 'Explosions, télékinésie, super vitesse.' },
+    { id: 'disaster', name: '🌪️ Catastrophes', desc: 'Tornades, tsunamis, éruptions.' },
+    { id: 'sport', name: '🏆 Sport', desc: 'Football, basket, surf, F1.' },
+    { id: 'vehicle', name: '🚗 Véhicules', desc: 'Voitures, motos, avions, vaisseaux.' },
+    { id: 'emotion', name: '🎭 Émotions', desc: 'Joie, tristesse, colère, amour.' },
+    { id: 'gaming', name: '🎮 Gaming', desc: 'VTuber, RPG, voxel, VR.' },
+    { id: 'music', name: '🎵 Musique', desc: 'Rap, pop, rock, électro, jazz.' },
+    { id: 'education', name: '📚 Éducation', desc: 'Sciences, histoire, cuisine.' },
+    { id: 'business', name: '🏢 Business', desc: 'Produits, immobilier, pub.' },
+    { id: 'travel', name: '🌍 Voyage', desc: 'Cartes postales, safari, plage.' },
+    { id: 'history', name: '🕰️ Histoire', desc: 'Égypte, Rome, années 20, 80.' },
+    { id: 'art', name: '🎨 Art', desc: 'Impressionnisme, cubisme, pop art.' },
+    { id: 'illusion', name: '🧠 Illusions', desc: 'Trompe-l\'œil, Escher, optique.' },
+    { id: 'social', name: '📱 Réseaux', desc: 'TikTok, Reels, Shorts.' },
+    { id: 'science', name: '🧬 Sciences', desc: 'ADN, espace, quantique.' },
+    { id: 'fantasy', name: '🧙 Fantasy', desc: 'Dragon, licorne, sirène, vampire.' },
+    { id: 'genre', name: '🎬 Genres', desc: 'Western, polar, horreur, romance.' },
+    { id: 'advanced', name: '🧩 Avancé', desc: 'Pixel art, low poly, vitrail, origami.' }
+];
+
+// ══════════════════════════════════════════════════════════════════
+// CATALOGUE DE STYLES
+// ══════════════════════════════════════════════════════════════════
+const ALL_STYLES = [];
+
+function addStyles(cat, styles) {
+    styles.forEach(s => ALL_STYLES.push({ ...s, cat }));
+}
+
+// ─── AMBIANCE ───
+addStyles('ambiance', [
+    { id: 'cinematic', name: 'Cinématique', emoji: '🎬', desc: 'Éclairage dramatique', type: 'preserve',
+      prompt: 'cinematic film look, dramatic lighting, subtle film grain, shallow depth of field, professional color grading. Preserve the exact subject identity, face, pose, and clothing.' },
+    { id: 'golden-hour', name: 'Golden Hour', emoji: '🌅', desc: 'Lumière dorée', type: 'preserve',
+      prompt: 'golden hour warm sunlight, soft amber glow, long shadows, luminous atmosphere. Preserve the exact subject identity, face, pose, and clothing.' },
+    { id: 'bw', name: 'Noir & Blanc', emoji: '⚫', desc: 'Monochrome', type: 'preserve',
+      prompt: 'elegant black and white, high contrast monochrome, deep blacks and luminous whites. Preserve the exact subject identity, face, pose, and clothing.' },
+    { id: 'pastel-dream', name: 'Pastel Rêveur', emoji: '🌸', desc: 'Teintes douces', type: 'preserve',
+      prompt: 'soft pastel color palette, dreamy diffused light, gentle dreamlike atmosphere, subtle glow. Preserve the exact subject identity, face, pose, and clothing.' },
+    { id: 'neon-urban', name: 'Néon Urbain', emoji: '🌆', desc: 'Reflets colorés', type: 'preserve',
+      prompt: 'neon-soaked night atmosphere, colorful reflections, cinematic urban glow, magenta and cyan accents. Preserve the exact subject identity, face, pose, and clothing.' },
+    { id: 'vintage-super8', name: 'Vintage Super 8', emoji: '📽️', desc: 'Grain rétro', type: 'preserve',
+      prompt: 'vintage Super 8 film aesthetic, grainy texture, subtle vignette, warm faded colors. Preserve the exact subject identity, face, pose, and clothing.' },
+    { id: 'dramatic-contrast', name: 'Contraste Dramatique', emoji: '🌓', desc: 'Ombres profondes', type: 'preserve',
+      prompt: 'high contrast dramatic lighting, deep shadows, bright highlights, chiaroscuro effect. Preserve the exact subject identity, face, pose, and clothing.' },
+    { id: 'misty', name: 'Brume Mystique', emoji: '🌫️', desc: 'Halo atmosphérique', type: 'preserve',
+      prompt: 'atmospheric mist, soft haze, diffused glowing light, mystical fog. Preserve the exact subject identity, face, pose, and clothing.' },
+    { id: 'chiaroscuro', name: 'Chiaroscuro', emoji: '🕯️', desc: 'Clair-obscur', type: 'preserve',
+      prompt: 'chiaroscuro painting lighting, single source of warm light, deep surrounding darkness. Preserve the exact subject identity, face, pose, and clothing.' },
+    { id: 'moonlight', name: 'Clair de Lune', emoji: '🌙', desc: 'Ambiance bleutée', type: 'preserve',
+      prompt: 'cool moonlight atmosphere, blue and silver tones, soft lunar glow. Preserve the exact subject identity, face, pose, and clothing.' },
+    { id: 'sunrise', name: 'Aube Douce', emoji: '🌄', desc: 'Premières lueurs', type: 'preserve',
+      prompt: 'dawn light, soft pink and pale blue sky tones, gentle awakening atmosphere. Preserve the exact subject identity, face, pose, and clothing.' },
+    { id: 'cyberpunk', name: 'Cyberpunk', emoji: '🌃', desc: 'Néons futuristes', type: 'preserve',
+      prompt: 'cyberpunk futuristic aesthetic, neon pink and cyan lighting, holographic advertisements, Blade Runner atmosphere. Preserve the exact subject identity, face, pose, and clothing.' },
+    { id: 'vaporwave', name: 'Vaporwave', emoji: '🌴', desc: 'Nostalgie 90s', type: 'preserve',
+      prompt: 'vaporwave aesthetic, nostalgic 90s imagery, pastel gradient, VHS quality. Preserve the exact subject identity, face, pose, and clothing.' },
+    { id: 'retro-80s', name: 'Synthwave 80s', emoji: '🕹️', desc: 'Néons années 80', type: 'preserve',
+      prompt: '80s synthwave aesthetic, neon grids, chrome reflections, retro futuristic. Preserve the exact subject identity, face, pose, and clothing.' },
+    { id: 'underwater', name: 'Sous-marin', emoji: '🌊', desc: 'Aquatique', type: 'preserve',
+      prompt: 'underwater atmosphere, caustic light rays, floating particles, blue green tones. Preserve the exact subject identity, face, pose, and clothing.' },
+    { id: 'fire', name: 'Feu & Braises', emoji: '🔥', desc: 'Chaleur', type: 'preserve',
+      prompt: 'fire and embers atmosphere, warm orange glow, floating sparks. Preserve the exact subject identity, face, pose, and clothing.' },
+    { id: 'ice', name: 'Glace & Givre', emoji: '❄️', desc: 'Froid', type: 'preserve',
+      prompt: 'ice and frost atmosphere, cool blue tones, crystalline textures, frozen breath. Preserve the exact subject identity, face, pose, and clothing.' },
+    { id: 'storm', name: 'Tempête', emoji: '⛈️', desc: 'Orage', type: 'preserve',
+      prompt: 'storm atmosphere, dramatic lightning flashes, dark clouds, heavy rain. Preserve the exact subject identity, face, pose, and clothing.' }
+]);
+
+// ─── CARTOON ───
+addStyles('cartoon', [
+    { id: 'simpson', name: 'Les Simpson', emoji: '🍩', desc: 'Cartoon jaune', type: 'stylize',
+      prompt: 'The Simpsons cartoon style, yellow-skinned characters, thick black outlines, flat saturated colors, Matt Groening art style. Transform the entire image into this cartoon style.' },
+    { id: 'pixar', name: 'Pixar 3D', emoji: '✨', desc: 'Animation 3D', type: 'stylize',
+      prompt: 'high-quality 3D computer animation, Pixar-style rendering, subsurface scattering, cinematic lighting. Transform the entire image into this 3D animated style.' },
+    { id: 'disney', name: 'Disney', emoji: '🏰', desc: 'Animation Disney', type: 'stylize',
+      prompt: 'classic Disney animation style, expressive characters, rich colors, magical atmosphere, hand-drawn aesthetic. Transform the entire image into this Disney style.' },
+    { id: 'dreamworks', name: 'DreamWorks', emoji: '🌙', desc: '3D DreamWorks', type: 'stylize',
+      prompt: 'DreamWorks 3D animation style, expressive faces, dynamic lighting, comedic timing. Transform the entire image into this DreamWorks style.' },
+    { id: 'claymation', name: 'Claymation', emoji: '🧱', desc: 'Pâte à modeler', type: 'stylize',
+      prompt: 'claymation stop-motion animation, plasticine texture, fingerprint details, Aardman Studios style. Transform the entire image into this claymation style.' },
+    { id: 'lego', name: 'Lego', emoji: '🧱', desc: 'Briques Lego', type: 'stylize',
+      prompt: 'LEGO minifigure style, plastic bricks, studs texture, LEGO movie aesthetic. Transform the entire image into this LEGO style.' },
+    { id: 'funko', name: 'Funko Pop', emoji: '🎁', desc: 'Figurine Funko', type: 'stylize',
+      prompt: 'Funko Pop vinyl figure style, oversized head, small body, glossy plastic texture. Transform the entire image into this Funko Pop style.' },
+    { id: 'chibi', name: 'Chibi', emoji: '🐣', desc: 'Mignon exagéré', type: 'stylize',
+      prompt: 'chibi style, oversized head, tiny body, big expressive eyes, kawaii aesthetic. Transform the entire image into this chibi style.' },
+    { id: 'bd-franco', name: 'BD franco-belge', emoji: '📘', desc: 'Ligne claire', type: 'stylize',
+      prompt: 'Franco-Belgian bande dessinée style, ligne claire technique, uniform clean ink outlines, flat vivid colors. Transform the entire image into this comic book style.' },
+    { id: 'comics-marvel', name: 'Comics Marvel', emoji: '💥', desc: 'Comics américain', type: 'stylize',
+      prompt: 'American comic book style, bold ink outlines, halftone dots, dynamic action poses, Marvel DC aesthetic. Transform the entire image into this comic style.' },
+    { id: 'pop-art', name: 'Pop Art', emoji: '🎨', desc: 'Warhol', type: 'stylize',
+      prompt: 'Pop Art style, Andy Warhol influence, bold flat colors, screen print aesthetic. Transform the entire image into this Pop Art style.' },
+    { id: 'graffiti', name: 'Graffiti', emoji: '🎨', desc: 'Street art', type: 'stylize',
+      prompt: 'graffiti street art style, spray paint texture, bold outlines, urban colors. Transform the entire image into this graffiti style.' }
+]);
+
+// ─── ANIME ───
+addStyles('anime', [
+    { id: 'ghibli', name: 'Studio Ghibli', emoji: '🌿', desc: 'Miyazaki', type: 'stylize',
+      prompt: 'Studio Ghibli anime style, Hayao Miyazaki aesthetic, hand-painted watercolor backgrounds, cel-shaded characters. Transform the entire image into this anime style.' },
+    { id: 'manga-nb', name: 'Manga N&B', emoji: '🖤', desc: 'Manga japonais', type: 'stylize',
+      prompt: 'black and white Japanese manga style, stark ink outlines, dramatic screentones, high contrast. Transform the entire image into this manga style.' },
+    { id: 'shonen', name: 'Shonen', emoji: '⚡', desc: 'Dragon Ball, Naruto', type: 'stylize',
+      prompt: 'shonen anime style, dynamic action poses, speed lines, energy auras, dramatic expressions. Transform the entire image into this shonen style.' },
+    { id: 'shojo', name: 'Shojo', emoji: '🌸', desc: 'Romance, fleurs', type: 'stylize',
+      prompt: 'shojo anime style, sparkly eyes, floral backgrounds, soft pastel colors, romantic atmosphere. Transform the entire image into this shojo style.' },
+    { id: 'seinen', name: 'Seinen', emoji: '🗡️', desc: 'Anime adulte', type: 'stylize',
+      prompt: 'seinen anime style, mature themes, detailed realistic art, darker tones. Transform the entire image into this seinen style.' },
+    { id: 'kawaii', name: 'Kawaii', emoji: '🐱', desc: 'Mignon japonais', type: 'stylize',
+      prompt: 'kawaii Japanese cute style, pastel colors, sparkles, hearts, adorable expressions. Transform the entire image into this kawaii style.' },
+    { id: 'mecha', name: 'Mecha', emoji: '🤖', desc: 'Robots géants', type: 'stylize',
+      prompt: 'mecha anime style, giant robots, detailed mechanical design, dramatic battles, Gundam aesthetic. Transform the entire image into this mecha style.' },
+    { id: 'pokemon', name: 'Pokémon', emoji: '⚡', desc: 'Style Pokémon', type: 'stylize',
+      prompt: 'Pokémon anime style, colorful creatures, adventure atmosphere, Nintendo aesthetic. Transform the entire image into this Pokémon style.' },
+    { id: 'naruto', name: 'Naruto', emoji: '🍥', desc: 'Ninja anime', type: 'stylize',
+      prompt: 'Naruto anime style, ninja aesthetic, chakra energy, dynamic action. Transform the entire image into this Naruto style.' },
+    { id: 'onepiece', name: 'One Piece', emoji: '🏴‍☠️', desc: 'Pirate anime', type: 'stylize',
+      prompt: 'One Piece anime style, pirate adventure, exaggerated expressions. Transform the entire image into this One Piece style.' }
+]);
+
+// ─── CINEMA ───
+addStyles('cinema', [
+    { id: 'hollywood', name: 'Blockbuster', emoji: '🎬', desc: 'Superproduction', type: 'preserve',
+      prompt: 'Hollywood blockbuster cinematic style, epic scale, dramatic lighting, orchestral atmosphere. Preserve the exact subject identity, face, pose, and clothing.' },
+    { id: 'nolan', name: 'Christopher Nolan', emoji: '🌀', desc: 'Nolan style', type: 'preserve',
+      prompt: 'Christopher Nolan cinematic style, IMAX quality, practical effects, moody atmosphere. Preserve the exact subject identity, face, pose, and clothing.' },
+    { id: 'tarantino', name: 'Tarantino', emoji: '🩸', desc: 'Tarantino style', type: 'preserve',
+      prompt: 'Quentin Tarantino cinematic style, stylish violence, retro references, 70s aesthetic. Preserve the exact subject identity, face, pose, and clothing.' },
+    { id: 'wes-anderson', name: 'Wes Anderson', emoji: '🎩', desc: 'Symétrie pastel', type: 'preserve',
+      prompt: 'Wes Anderson cinematic style, perfect symmetry, pastel color palette, whimsical atmosphere. Preserve the exact subject identity, face, pose, and clothing.' },
+    { id: 'villeneuve', name: 'Villeneuve', emoji: '🏜️', desc: 'SF contemplative', type: 'preserve',
+      prompt: 'Denis Villeneuve cinematic style, vast landscapes, atmospheric tension, Blade Runner 2049 aesthetic. Preserve the exact subject identity, face, pose, and clothing.' },
+    { id: 'fincher', name: 'David Fincher', emoji: '🌧️', desc: 'Thriller sombre', type: 'preserve',
+      prompt: 'David Fincher cinematic style, cold color palette, precise camera work, dark atmosphere. Preserve the exact subject identity, face, pose, and clothing.' },
+    { id: 'spielberg', name: 'Spielberg', emoji: '🌟', desc: 'Émerveillement', type: 'preserve',
+      prompt: 'Steven Spielberg cinematic style, sense of wonder, warm lighting, iconic silhouettes. Preserve the exact subject identity, face, pose, and clothing.' },
+    { id: 'scorsese', name: 'Scorsese', emoji: '🎸', desc: 'Rock & gangsters', type: 'preserve',
+      prompt: 'Martin Scorsese cinematic style, dynamic camera, rock soundtrack atmosphere, gritty urban energy. Preserve the exact subject identity, face, pose, and clothing.' },
+    { id: 'burton', name: 'Tim Burton', emoji: '🎃', desc: 'Gothique fantastique', type: 'preserve',
+      prompt: 'Tim Burton cinematic style, gothic aesthetic, dark whimsy, striped patterns. Preserve the exact subject identity, face, pose, and clothing.' },
+    { id: 'miyazaki-cinema', name: 'Cinéma Ghibli', emoji: '🍃', desc: 'Contemplatif', type: 'preserve',
+      prompt: 'Ghibli cinematic atmosphere, contemplative mood, natural lighting, gentle wind. Preserve the exact subject identity, face, pose, and clothing.' }
+]);
+
+// ─── ACTION ───
+addStyles('action', [
+    { id: 'kungfu-classic', name: 'Kung Fu', emoji: '🥋', desc: 'Poings, paumes', type: 'preserve',
+      prompt: 'classic kung fu martial arts action, fluid palm strikes and fist techniques, crane and tiger stances, slow-motion dramatic execution. Preserve the exact subject identity.' },
+    { id: 'wing-chun', name: 'Wing Chun', emoji: '🖐️', desc: 'Coups rapprochés', type: 'preserve',
+      prompt: 'Wing Chun martial arts, rapid close-range chain punches, centerline theory. Preserve the exact subject identity.' },
+    { id: 'taekwondo', name: 'Taekwondo', emoji: '🦵', desc: 'Coups de pied', type: 'preserve',
+      prompt: 'Taekwondo martial arts, spectacular high spinning kicks, aerial techniques, dramatic slow-motion. Preserve the exact subject identity.' },
+    { id: 'judo', name: 'Judo', emoji: '🤼', desc: 'Projections', type: 'preserve',
+      prompt: 'Judo martial arts, powerful throws and sweeps, grappling techniques. Preserve the exact subject identity.' },
+    { id: 'karate', name: 'Karaté', emoji: '✊', desc: 'Coups précis', type: 'preserve',
+      prompt: 'Shotokan karate, powerful precise strikes, deep stances, kime focus. Preserve the exact subject identity.' },
+    { id: 'muay-thai', name: 'Muay Thai', emoji: '🦶', desc: 'Coups de coude', type: 'preserve',
+      prompt: 'Muay Thai martial arts, powerful elbow and knee strikes, clinch work, dramatic impact. Preserve the exact subject identity.' },
+    { id: 'aikido', name: 'Aïkido', emoji: '🌀', desc: 'Redirection', type: 'preserve',
+      prompt: 'Aikido martial arts, circular flowing movements, redirection of energy. Preserve the exact subject identity.' },
+    { id: 'wushu', name: 'Wushu', emoji: '🎭', desc: 'Acrobaties', type: 'preserve',
+      prompt: 'Wushu contemporary martial arts, spectacular acrobatic movements, flowing choreography. Preserve the exact subject identity.' },
+    { id: 'sabre', name: 'Sabre / Katana', emoji: '⚔️', desc: 'Coupes', type: 'preserve',
+      prompt: 'sword fighting with katana, iaido drawing techniques, dramatic slash, light trails, cherry blossom petals. Preserve the exact subject identity.' },
+    { id: 'ninjutsu', name: 'Ninjutsu', emoji: '🥷', desc: 'Furtif', type: 'preserve',
+      prompt: 'ninja stealth martial arts, silent movement, shuriken throwing, smoke techniques. Preserve the exact subject identity.' },
+    { id: 'drunken-fist', name: 'Poing Ivre', emoji: '🍶', desc: 'Imprévisible', type: 'preserve',
+      prompt: 'drunken fist kung fu style, unpredictable swaying movements, Jackie Chan style choreography. Preserve the exact subject identity.' },
+    { id: 'matrix', name: 'Matrix', emoji: '🕶️', desc: 'Bullet time', type: 'preserve',
+      prompt: 'Matrix bullet-time action, impossible body bends, dodging projectiles in slow motion, green digital rain. Preserve the exact subject identity.' },
+    { id: 'john-wick', name: 'John Wick', emoji: '🔫', desc: 'Gun fu', type: 'preserve',
+      prompt: 'John Wick style gun fu action, precise close-quarters combat, neon lighting, intense choreography. Preserve the exact subject identity.' },
+    { id: 'mission-impossible', name: 'Mission Impossible', emoji: '🕵️', desc: 'Espionnage', type: 'preserve',
+      prompt: 'Mission Impossible style action, daring stunts, exotic locations, tension. Preserve the exact subject identity.' },
+    { id: 'bruce-lee', name: 'Bruce Lee', emoji: '🐉', desc: 'Jeet Kune Do', type: 'preserve',
+      prompt: 'Bruce Lee style martial arts, lightning-fast strikes, iconic poses, nunchaku, 70s Hong Kong cinema. Preserve the exact subject identity.' },
+    { id: 'jackie-chan', name: 'Jackie Chan', emoji: '😄', desc: 'Comédie martiale', type: 'preserve',
+      prompt: 'Jackie Chan style martial arts comedy, acrobatic stunts, comedic timing, inventive choreography. Preserve the exact subject identity.' }
+]);
+
+// ─── DANSE ───
+addStyles('dance', [
+    { id: 'hip-hop', name: 'Hip-Hop', emoji: '🎤', desc: 'Street, breakdance', type: 'preserve',
+      prompt: 'hip-hop dance, breakdance moves, freeze poses, urban street style, rhythmic energy. Preserve the exact subject identity.' },
+    { id: 'ballet', name: 'Ballet', emoji: '🩰', desc: 'Classique, grâce', type: 'preserve',
+      prompt: 'classical ballet, graceful pirouettes, elegant movements, stage lighting. Preserve the exact subject identity.' },
+    { id: 'contemporary', name: 'Contemporain', emoji: '💫', desc: 'Moderne, émotion', type: 'preserve',
+      prompt: 'contemporary dance, fluid expressive movements, emotional, flowing fabric. Preserve the exact subject identity.' },
+    { id: 'kpop', name: 'K-pop', emoji: '🇰🇷', desc: 'Chorégraphie coréenne', type: 'preserve',
+      prompt: 'K-pop dance choreography, synchronized movements, neon stage, idol aesthetic. Preserve the exact subject identity.' },
+    { id: 'salsa', name: 'Salsa', emoji: '💃', desc: 'Latino passionné', type: 'preserve',
+      prompt: 'salsa dance, passionate latin movements, partner dance, vibrant colors. Preserve the exact subject identity.' },
+    { id: 'tango', name: 'Tango', emoji: '🌹', desc: 'Argentin intense', type: 'preserve',
+      prompt: 'Argentine tango, intense close embrace, dramatic leg movements, moody lighting. Preserve the exact subject identity.' },
+    { id: 'breakdance', name: 'Breakdance', emoji: '🌀', desc: 'B-boying', type: 'preserve',
+      prompt: 'breakdance b-boying, power moves, headspins, windmills, street battle. Preserve the exact subject identity.' },
+    { id: 'vogue', name: 'Vogue / Ballroom', emoji: '💅', desc: 'Pose, strut', type: 'preserve',
+      prompt: 'vogue dance, ballroom culture, striking poses, catwalk, hand performance. Preserve the exact subject identity.' },
+    { id: 'bollywood', name: 'Bollywood', emoji: '🇮🇳', desc: 'Indien coloré', type: 'preserve',
+      prompt: 'Bollywood dance, vibrant colors, energetic group choreography, expressive hand gestures. Preserve the exact subject identity.' },
+    { id: 'flamenco', name: 'Flamenco', emoji: '💃', desc: 'Espagnol passionné', type: 'preserve',
+      prompt: 'flamenco dance, passionate stomping, Spanish guitar atmosphere, ruffled dress. Preserve the exact subject identity.' },
+    { id: 'tribal-fire', name: 'Danse Tribal / Feu', emoji: '🔥', desc: 'Hypnotique', type: 'preserve',
+      prompt: 'tribal fire dance, hypnotic movements, flames, drums, ritual atmosphere. Preserve the exact subject identity.' },
+    { id: 'slow-mo-dance', name: 'Slow Motion Dance', emoji: '🐢', desc: 'Ralenti', type: 'preserve',
+      prompt: 'slow motion dance, every movement suspended, particles floating, poetic. Preserve the exact subject identity.' }
+]);
+
+// ─── CAMERA ───
+addStyles('camera', [
+    { id: 'dolly-zoom', name: 'Dolly Zoom', emoji: '🌀', desc: 'Vertigo Hitchcock', type: 'preserve',
+      prompt: 'dolly zoom effect, Hitchcock Vertigo, perspective distortion, background stretching. Preserve the exact subject identity.' },
+    { id: 'orbit-360', name: 'Orbite 360°', emoji: '🔄', desc: 'Caméra tourne', type: 'preserve',
+      prompt: '360 degree orbit around subject, smooth circular camera movement. Preserve the exact subject identity.' },
+    { id: 'drone', name: 'Drone Aérien', emoji: '🚁', desc: 'Vue du ciel', type: 'preserve',
+      prompt: 'aerial drone shot, sweeping bird\'s eye view, revealing landscape. Preserve the exact subject identity.' },
+    { id: 'crane', name: 'Crane Shot', emoji: '🏗️', desc: 'Montée verticale', type: 'preserve',
+      prompt: 'crane shot, vertical rising camera movement, dramatic reveal. Preserve the exact subject identity.' },
+    { id: 'steadicam', name: 'Steadicam', emoji: '🎥', desc: 'Fluide', type: 'preserve',
+      prompt: 'smooth steadicam shot, fluid following movement, no shake. Preserve the exact subject identity.' },
+    { id: 'snorricam', name: 'Snorricam', emoji: '📸', desc: 'Fixée au sujet', type: 'preserve',
+      prompt: 'snorricam, camera attached to subject, world spinning around. Preserve the exact subject identity.' },
+    { id: 'push-in', name: 'Push-In', emoji: '➡️', desc: 'Zoom dramatique', type: 'preserve',
+      prompt: 'slow dramatic push-in toward subject, building tension. Preserve the exact subject identity.' },
+    { id: 'pull-out', name: 'Pull-Out', emoji: '⬅️', desc: 'Dézoom révélation', type: 'preserve',
+      prompt: 'pull-out camera movement, revealing context, dramatic reveal. Preserve the exact subject identity.' },
+    { id: 'whip-pan', name: 'Whip Pan', emoji: '💨', desc: 'Rotation rapide', type: 'preserve',
+      prompt: 'whip pan, fast rotation, motion blur, transition between scenes. Preserve the exact subject identity.' },
+    { id: 'rack-focus', name: 'Rack Focus', emoji: '🔍', desc: 'Net/flou', type: 'preserve',
+      prompt: 'rack focus between foreground and background, sharp to blur transition. Preserve the exact subject identity.' },
+    { id: 'parallax', name: 'Parallaxe 2.5D', emoji: '📐', desc: 'Profondeur 2D', type: 'preserve',
+      prompt: 'parallax 2.5D movement, depth from 2D image, layers moving at different speeds. Preserve the exact subject identity.' },
+    { id: 'tilt', name: 'Tilt Up/Down', emoji: '↕️', desc: 'Révélation verticale', type: 'preserve',
+      prompt: 'tilt camera movement, vertical reveal from ground to sky. Preserve the exact subject identity.' },
+    { id: 'travelling', name: 'Travelling Latéral', emoji: '↔️', desc: 'Horizontal', type: 'preserve',
+      prompt: 'lateral travelling shot, horizontal camera movement. Preserve the exact subject identity.' },
+    { id: 'pov', name: 'Caméra Subjective', emoji: '👁️', desc: 'POV', type: 'preserve',
+      prompt: 'first-person POV shot, seeing through the subject\'s eyes. Preserve the exact subject identity.' },
+    { id: 'handheld', name: 'Caméra Épaule', emoji: '📹', desc: 'Tremblement', type: 'preserve',
+      prompt: 'handheld camera, organic shake, urgency, documentary feel. Preserve the exact subject identity.' }
+]);// ─── CUT / MONTAGE ───
+addStyles('cut', [
+    { id: 'jump-cut', name: 'Jump Cut', emoji: '✂️', desc: 'Coupes sèches', type: 'preserve',
+      prompt: 'jump cut editing, rhythmic abrupt time skips. Preserve the exact subject identity.' },
+    { id: 'match-cut', name: 'Match Cut', emoji: '🔗', desc: 'Transition forme', type: 'preserve',
+      prompt: 'match cut transition, similar shapes connecting two scenes. Preserve the exact subject identity.' },
+    { id: 'smash-cut', name: 'Smash Cut', emoji: '💥', desc: 'Rupture brutale', type: 'preserve',
+      prompt: 'smash cut, abrupt tonal shift, jarring transition. Preserve the exact subject identity.' },
+    { id: 'cross-cutting', name: 'Cross Cutting', emoji: '🔀', desc: 'Scènes parallèles', type: 'preserve',
+      prompt: 'cross cutting between parallel scenes, alternating action. Preserve the exact subject identity.' },
+    { id: 'rapid-montage', name: 'Montage Rapide', emoji: '⚡', desc: 'Plans courts', type: 'preserve',
+      prompt: 'rapid montage, short intense shots, high energy editing. Preserve the exact subject identity.' },
+    { id: 'beat-cut', name: 'Cut au Battement', emoji: '🎵', desc: 'Synchro musique', type: 'preserve',
+      prompt: 'cuts synced to musical beats, rhythmic editing. Preserve the exact subject identity.' },
+    { id: 'flash-transition', name: 'Flash Blanc', emoji: '⚪', desc: 'Éclair', type: 'preserve',
+      prompt: 'white flash transition between shots, blinding moment. Preserve the exact subject identity.' },
+    { id: 'glitch-transition', name: 'Glitch', emoji: '📺', desc: 'Distorsion', type: 'preserve',
+      prompt: 'glitch transition, digital distortion, corrupted signal. Preserve the exact subject identity.' },
+    { id: 'morphing', name: 'Morphing', emoji: '🔄', desc: 'Transformation', type: 'preserve',
+      prompt: 'morphing transition, fluid transformation between images. Preserve the exact subject identity.' },
+    { id: 'zoom-cut', name: 'Zoom Cut', emoji: '🔎', desc: 'Zoom → plan', type: 'preserve',
+      prompt: 'zoom cut transition, fast zoom becomes next scene. Preserve the exact subject identity.' }
+]);
+
+// ─── SUPERPOUVOIRS ───
+addStyles('powers', [
+    { id: 'explosion', name: 'Explosion', emoji: '💥', desc: 'Boule de feu', type: 'preserve',
+      prompt: 'cinematic explosion, fireball, shockwave, debris flying, dramatic impact. Preserve the exact subject identity.' },
+    { id: 'super-speed', name: 'Super Vitesse', emoji: '⚡', desc: 'Effet Flash', type: 'preserve',
+      prompt: 'super speed effect, motion trails, lightning aura, The Flash style. Preserve the exact subject identity.' },
+    { id: 'telekinesis', name: 'Télékinésie', emoji: '🧠', desc: 'Pouvoir mental', type: 'preserve',
+      prompt: 'telekinesis power, objects floating, mental energy, glowing eyes. Preserve the exact subject identity.' },
+    { id: 'energy-ball', name: 'Boule d\'Énergie', emoji: '🔵', desc: 'Projection', type: 'preserve',
+      prompt: 'energy ball between hands, glowing plasma, power charging. Preserve the exact subject identity.' },
+    { id: 'lightning', name: 'Foudre', emoji: '⚡', desc: 'Électrique', type: 'preserve',
+      prompt: 'lightning power, electric arcs, glowing eyes, storm aura. Preserve the exact subject identity.' },
+    { id: 'ice-power', name: 'Pouvoir de Glace', emoji: '❄️', desc: 'Givre', type: 'preserve',
+      prompt: 'ice power, freezing everything, crystalline structures, cold breath. Preserve the exact subject identity.' },
+    { id: 'fire-power', name: 'Pouvoir du Feu', emoji: '🔥', desc: 'Pyrokinésie', type: 'preserve',
+      prompt: 'pyrokinesis, fire from hands, flames surrounding body. Preserve the exact subject identity.' },
+    { id: 'teleport', name: 'Téléportation', emoji: '🌫️', desc: 'Disparition', type: 'preserve',
+      prompt: 'teleportation, disappearing in smoke, reappearing, purple energy. Preserve the exact subject identity.' },
+    { id: 'levitation', name: 'Lévitation', emoji: '🧘', desc: 'Flotter', type: 'preserve',
+      prompt: 'levitation, floating in the air, meditative pose, glowing aura. Preserve the exact subject identity.' },
+    { id: 'transformation', name: 'Transformation', emoji: '🦁', desc: 'Métamorphose', type: 'preserve',
+      prompt: 'dramatic transformation, human to animal or creature, magical energy. Preserve the exact subject identity.' },
+    { id: 'summon', name: 'Invocation', emoji: '🐉', desc: 'Créature', type: 'preserve',
+      prompt: 'summoning a creature, magical circle, glowing runes. Preserve the exact subject identity.' },
+    { id: 'shield', name: 'Bouclier Magique', emoji: '🛡️', desc: 'Dôme', type: 'preserve',
+      prompt: 'magical energy shield, protective dome, glowing barrier. Preserve the exact subject identity.' },
+    { id: 'time-control', name: 'Contrôle du Temps', emoji: '⏳', desc: 'Gel', type: 'preserve',
+      prompt: 'time control power, freezing time, rewinding, clock particles. Preserve the exact subject identity.' },
+    { id: 'portal', name: 'Portail', emoji: '🌀', desc: 'Dimensionnel', type: 'preserve',
+      prompt: 'dimensional portal opening, swirling energy, another world visible. Preserve the exact subject identity.' },
+    { id: 'meteor-rain', name: 'Pluie de Météores', emoji: '☄️', desc: 'Ciel en feu', type: 'preserve',
+      prompt: 'meteor rain, sky on fire, apocalyptic atmosphere. Preserve the exact subject identity.' }
+]);
+
+// ─── CATASTROPHES ───
+addStyles('disaster', [
+    { id: 'tornado', name: 'Tornade', emoji: '🌪️', desc: 'Vent violent', type: 'preserve',
+      prompt: 'massive tornado, violent wind, debris flying, dark sky. Preserve the exact subject identity.' },
+    { id: 'tsunami', name: 'Tsunami', emoji: '🌊', desc: 'Vague géante', type: 'preserve',
+      prompt: 'giant tsunami wave, massive water wall, apocalyptic. Preserve the exact subject identity.' },
+    { id: 'earthquake', name: 'Séisme', emoji: '🌍', desc: 'Tremblement', type: 'preserve',
+      prompt: 'earthquake, ground shaking, cracks appearing, buildings swaying. Preserve the exact subject identity.' },
+    { id: 'volcano', name: 'Éruption Volcanique', emoji: '🌋', desc: 'Lave', type: 'preserve',
+      prompt: 'volcanic eruption, lava flowing, ash cloud, fiery sky. Preserve the exact subject identity.' },
+    { id: 'sandstorm', name: 'Tempête de Sable', emoji: '🏜️', desc: 'Poussière', type: 'preserve',
+      prompt: 'sandstorm, massive dust wall, apocalyptic atmosphere. Preserve the exact subject identity.' },
+    { id: 'blizzard', name: 'Blizzard', emoji: '🌨️', desc: 'Neige violente', type: 'preserve',
+      prompt: 'blizzard, violent snowstorm, freezing wind, whiteout. Preserve the exact subject identity.' },
+    { id: 'aurora', name: 'Aurore Boréale', emoji: '🌌', desc: 'Ciel magique', type: 'preserve',
+      prompt: 'aurora borealis, green and pink sky, magical northern lights. Preserve the exact subject identity.' },
+    { id: 'eclipse', name: 'Éclipse', emoji: '🌑', desc: 'Soleil noir', type: 'preserve',
+      prompt: 'solar eclipse, dark sun, dramatic light ring, eerie atmosphere. Preserve the exact subject identity.' },
+    { id: 'meteor-shower', name: 'Pluie d\'Étoiles', emoji: '🌟', desc: 'Nocturne', type: 'preserve',
+      prompt: 'meteor shower, shooting stars, magical night sky. Preserve the exact subject identity.' }
+]);
+
+// ─── SPORT ───
+addStyles('sport', [
+    { id: 'football', name: 'Football', emoji: '⚽', desc: 'But', type: 'preserve',
+      prompt: 'football soccer action, goal scoring, stadium atmosphere, slow-motion celebration. Preserve the exact subject identity.' },
+    { id: 'basketball', name: 'Basketball', emoji: '🏀', desc: 'Dunk', type: 'preserve',
+      prompt: 'basketball, spectacular dunk, crowd cheering, slow-motion. Preserve the exact subject identity.' },
+    { id: 'tennis', name: 'Tennis', emoji: '🎾', desc: 'Smash', type: 'preserve',
+      prompt: 'tennis, powerful smash, fast rally, professional court. Preserve the exact subject identity.' },
+    { id: 'running', name: 'Course à Pied', emoji: '🏃', desc: 'Sprint', type: 'preserve',
+      prompt: 'running sprint, sweat, motion blur, determination. Preserve the exact subject identity.' },
+    { id: 'swimming', name: 'Natation', emoji: '🏊', desc: 'Plongée', type: 'preserve',
+      prompt: 'swimming, diving into water, fluid strokes, splashes. Preserve the exact subject identity.' },
+    { id: 'skateboard', name: 'Skateboard', emoji: '🛹', desc: 'Figure', type: 'preserve',
+      prompt: 'skateboarding, kickflip, grind, urban skatepark. Preserve the exact subject identity.' },
+    { id: 'surf', name: 'Surf', emoji: '🏄', desc: 'Vague', type: 'preserve',
+      prompt: 'surfing, riding a wave, spray, ocean. Preserve the exact subject identity.' },
+    { id: 'climbing', name: 'Escalade', emoji: '🧗', desc: 'Ascension', type: 'preserve',
+      prompt: 'rock climbing, ascension, effort, summit. Preserve the exact subject identity.' },
+    { id: 'gymnastics', name: 'Gymnastique', emoji: '🤸', desc: 'Rotations', type: 'preserve',
+      prompt: 'gymnastics, flips and rotations, grace and power. Preserve the exact subject identity.' },
+    { id: 'boxing', name: 'Boxe', emoji: '🥊', desc: 'KO', type: 'preserve',
+      prompt: 'boxing match, powerful punches, sweat flying, slow-motion knockout. Preserve the exact subject identity.' },
+    { id: 'cycling', name: 'Cyclisme', emoji: '🚴', desc: 'Descente', type: 'preserve',
+      prompt: 'cycling, fast descent, mountain road, speed. Preserve the exact subject identity.' },
+    { id: 'ski', name: 'Ski / Snowboard', emoji: '🎿', desc: 'Poudreuse', type: 'preserve',
+      prompt: 'skiing or snowboarding, powder snow, mountain slope, jump. Preserve the exact subject identity.' },
+    { id: 'f1', name: 'Formule 1', emoji: '🏎️', desc: 'Vitesse', type: 'preserve',
+      prompt: 'Formula 1 racing, high speed, pit stop, overtaking. Preserve the exact subject identity.' },
+    { id: 'parkour', name: 'Parkour', emoji: '🏃‍♂️', desc: 'Sauts urbains', type: 'preserve',
+      prompt: 'parkour, urban jumps, fluid movement, rooftop. Preserve the exact subject identity.' },
+    { id: 'yoga', name: 'Yoga', emoji: '🧘', desc: 'Sérénité', type: 'preserve',
+      prompt: 'yoga practice, serene poses, breathing, peaceful. Preserve the exact subject identity.' }
+]);
+
+// ─── VÉHICULES ───
+addStyles('vehicle', [
+    { id: 'sport-car', name: 'Voiture de Sport', emoji: '🏎️', desc: 'Drift', type: 'preserve',
+      prompt: 'sports car drifting, acceleration, reflections, speed. Preserve the exact subject identity.' },
+    { id: 'motorcycle', name: 'Moto', emoji: '🏍️', desc: 'Virage', type: 'preserve',
+      prompt: 'motorcycle, wheelie, cornering, speed, rider. Preserve the exact subject identity.' },
+    { id: 'airplane', name: 'Avion', emoji: '✈️', desc: 'Décollage', type: 'preserve',
+      prompt: 'airplane taking off, clouds, cockpit view. Preserve the exact subject identity.' },
+    { id: 'helicopter', name: 'Hélicoptère', emoji: '🚁', desc: 'Survol', type: 'preserve',
+      prompt: 'helicopter flying, rotors spinning, aerial view. Preserve the exact subject identity.' },
+    { id: 'boat', name: 'Bateau', emoji: '⛵', desc: 'Vagues', type: 'preserve',
+      prompt: 'boat sailing, waves, sea spray. Preserve the exact subject identity.' },
+    { id: 'train', name: 'Train', emoji: '🚂', desc: 'Passage', type: 'preserve',
+      prompt: 'train passing, landscape scrolling. Preserve the exact subject identity.' },
+    { id: 'robot-mecha', name: 'Robot / Mecha', emoji: '🤖', desc: 'Mecha', type: 'preserve',
+      prompt: 'giant mecha robot, walking, combat, transformation. Preserve the exact subject identity.' },
+    { id: 'spaceship', name: 'Vaisseau Spatial', emoji: '🚀', desc: 'Espace', type: 'preserve',
+      prompt: 'spaceship, hyperdrive, planet approach, space. Preserve the exact subject identity.' }
+]);
+
+// ─── ÉMOTIONS ───
+addStyles('emotion', [
+    { id: 'joy', name: 'Joie', emoji: '😊', desc: 'Sourire', type: 'preserve',
+      prompt: 'expression of joy, smiling, laughing, eyes sparkling, warm light. Preserve the exact subject identity.' },
+    { id: 'sadness', name: 'Tristesse', emoji: '😢', desc: 'Larme', type: 'preserve',
+      prompt: 'expression of sadness, single tear, downcast eyes, blue tones. Preserve the exact subject identity.' },
+    { id: 'anger', name: 'Colère', emoji: '😠', desc: 'Intensité', type: 'preserve',
+      prompt: 'expression of anger, intense gaze, clenched fists, red tones. Preserve the exact subject identity.' },
+    { id: 'fear', name: 'Peur', emoji: '😨', desc: 'Tremblement', type: 'preserve',
+      prompt: 'expression of fear, trembling, wide eyes, shadows approaching. Preserve the exact subject identity.' },
+    { id: 'surprise', name: 'Surprise', emoji: '😲', desc: 'Étonnement', type: 'preserve',
+      prompt: 'expression of surprise, wide eyes, open mouth, sudden movement. Preserve the exact subject identity.' },
+    { id: 'love', name: 'Amour', emoji: '❤️', desc: 'Tendresse', type: 'preserve',
+      prompt: 'expression of love, tender gaze, warm light, proximity. Preserve the exact subject identity.' },
+    { id: 'nostalgia', name: 'Nostalgie', emoji: '📷', desc: 'Souvenir', type: 'preserve',
+      prompt: 'expression of nostalgia, sepia tones, soft focus, memories. Preserve the exact subject identity.' },
+    { id: 'determination', name: 'Détermination', emoji: '💪', desc: 'Regard fixe', type: 'preserve',
+      prompt: 'expression of determination, fixed gaze, clenched jaw, rising music. Preserve the exact subject identity.' },
+    { id: 'serenity', name: 'Sérénité', emoji: '🕊️', desc: 'Paix', type: 'preserve',
+      prompt: 'expression of serenity, slow breathing, eyes closing, peaceful. Preserve the exact subject identity.' }
+]);
+
+// ─── GAMING ───
+addStyles('gaming', [
+    { id: 'vtubeur', name: 'Avatar VTuber', emoji: '🎭', desc: 'Anime', type: 'stylize',
+      prompt: 'VTuber anime avatar, 2D character, expressive, virtual streamer. Transform the entire image into this VTuber style.' },
+    { id: 'rpg', name: 'Personnage RPG', emoji: '🗡️', desc: 'Fantasy game', type: 'stylize',
+      prompt: 'RPG video game character portrait, fantasy armor, stats UI, inventory. Transform the entire image into this RPG style.' },
+    { id: 'voxel', name: 'Monde Voxel', emoji: '🧊', desc: 'Minecraft', type: 'stylize',
+      prompt: 'voxel art style, Minecraft aesthetic, blocky world, pixel textures. Transform the entire image into this voxel style.' },
+    { id: 'lowpoly', name: 'Low Poly', emoji: '🔺', desc: 'Géométrique', type: 'stylize',
+      prompt: 'low poly 3D style, geometric facets, minimalist, flat shading. Transform the entire image into this low poly style.' },
+    { id: 'arcade', name: 'Arcade', emoji: '🕹️', desc: 'Jeu rétro', type: 'stylize',
+      prompt: 'arcade game style, retro pixels, CRT screen, 80s arcade. Transform the entire image into this arcade style.' },
+    { id: 'vr', name: 'Réalité Virtuelle', emoji: '🥽', desc: 'Immersif', type: 'preserve',
+      prompt: 'virtual reality environment, VR headset view, immersive 360. Preserve the exact subject identity.' },
+    { id: 'ar', name: 'Réalité Augmentée', emoji: '📱', desc: '3D dans le réel', type: 'preserve',
+      prompt: 'augmented reality, 3D object in real photo, holographic overlay. Preserve the exact subject identity.' }
+]);
+
+// ─── MUSIQUE ───
+addStyles('music', [
+    { id: 'rap', name: 'Clip Rap', emoji: '🎤', desc: 'Urbain', type: 'preserve',
+      prompt: 'rap music video, urban atmosphere, chains, neon, hip-hop culture. Preserve the exact subject identity.' },
+    { id: 'pop', name: 'Clip Pop', emoji: '🎶', desc: 'Coloré', type: 'preserve',
+      prompt: 'pop music video, vibrant colors, dance, confetti, catchy. Preserve the exact subject identity.' },
+    { id: 'rock', name: 'Clip Rock', emoji: '🎸', desc: 'Guitare', type: 'preserve',
+      prompt: 'rock music video, electric guitar, smoke, stage performance. Preserve the exact subject identity.' },
+    { id: 'electro', name: 'Clip Électro', emoji: '🎧', desc: 'Néons', type: 'preserve',
+      prompt: 'electronic music video, neon lights, lasers, crowd, festival. Preserve the exact subject identity.' },
+    { id: 'jazz', name: 'Clip Jazz', emoji: '🎷', desc: 'Club sombre', type: 'preserve',
+      prompt: 'jazz music video, dark club, saxophone, smoke, vintage atmosphere. Preserve the exact subject identity.' },
+    { id: 'classical', name: 'Clip Classique', emoji: '🎻', desc: 'Orchestre', type: 'preserve',
+      prompt: 'classical music video, orchestra, chandeliers, elegance. Preserve the exact subject identity.' },
+    { id: 'reggaeton', name: 'Clip Reggaeton', emoji: '🌴', desc: 'Plage', type: 'preserve',
+      prompt: 'reggaeton music video, beach, dance, warm colors, latin energy. Preserve the exact subject identity.' },
+    { id: 'country', name: 'Clip Country', emoji: '🤠', desc: 'Campagne', type: 'preserve',
+      prompt: 'country music video, road, countryside, sunset, cowboy. Preserve the exact subject identity.' },
+    { id: 'metal', name: 'Clip Metal', emoji: '🤘', desc: 'Feu', type: 'preserve',
+      prompt: 'metal music video, fire, chaos, dark, intense. Preserve the exact subject identity.' },
+    { id: 'lofi', name: 'Clip Lo-Fi', emoji: '📻', desc: 'Calme', type: 'preserve',
+      prompt: 'lo-fi hip hop aesthetic, calm anime, rain, study atmosphere. Preserve the exact subject identity.' }
+]);
+
+// ─── ÉDUCATION ───
+addStyles('education', [
+    { id: 'science', name: 'Explication Scientifique', emoji: '🔬', desc: 'Particules', type: 'preserve',
+      prompt: 'scientific explanation animation, molecules, particles, educational. Preserve the exact subject identity.' },
+    { id: 'history-edu', name: 'Histoire', emoji: '📜', desc: 'Reconstitution', type: 'preserve',
+      prompt: 'historical reconstruction, period accurate, educational. Preserve the exact subject identity.' },
+    { id: 'geography', name: 'Géographie', emoji: '🗺️', desc: 'Cartes 3D', type: 'preserve',
+      prompt: 'geography, 3D map unfolding, relief, educational. Preserve the exact subject identity.' },
+    { id: 'math', name: 'Mathématiques', emoji: '📐', desc: 'Formes', type: 'preserve',
+      prompt: 'mathematics animation, shapes, equations, geometric. Preserve the exact subject identity.' },
+    { id: 'languages', name: 'Langues', emoji: '🗣️', desc: 'Mots', type: 'preserve',
+      prompt: 'language learning, illustrated words, pronunciation, context. Preserve the exact subject identity.' },
+    { id: 'cooking', name: 'Cuisine', emoji: '👨‍🍳', desc: 'Recette', type: 'preserve',
+      prompt: 'cooking recipe animation, step by step, steam, appetizing. Preserve the exact subject identity.' },
+    { id: 'medical', name: 'Médical', emoji: '🩺', desc: 'Anatomie', type: 'preserve',
+      prompt: 'medical animation, anatomy, organs, circulation. Preserve the exact subject identity.' },
+    { id: 'astronomy', name: 'Astronomie', emoji: '🔭', desc: 'Planètes', type: 'preserve',
+      prompt: 'astronomy, planets, galaxies, black holes. Preserve the exact subject identity.' }
+]);
+
+// ─── BUSINESS ───
+addStyles('business', [
+    { id: 'product', name: 'Présentation Produit', emoji: '📦', desc: 'Rotation', type: 'preserve',
+      prompt: 'product presentation, rotation, zoom on details, professional. Preserve the exact subject identity.' },
+    { id: 'testimonial', name: 'Témoignage Client', emoji: '💬', desc: 'Citation', type: 'preserve',
+      prompt: 'customer testimonial, portrait speaking, quote overlay. Preserve the exact subject identity.' },
+    { id: 'corporate', name: 'Annonce Entreprise', emoji: '🏢', desc: 'Logo animé', type: 'preserve',
+      prompt: 'corporate announcement, animated logo, team, vision. Preserve the exact subject identity.' },
+    { id: 'real-estate', name: 'Immobilier', emoji: '🏠', desc: 'Visite virtuelle', type: 'preserve',
+      prompt: 'real estate tour, virtual visit, architectural, neighborhood. Preserve the exact subject identity.' },
+    { id: 'restaurant', name: 'Restaurant', emoji: '🍽️', desc: 'Plat', type: 'preserve',
+      prompt: 'restaurant atmosphere, dishes, service, ambiance. Preserve the exact subject identity.' },
+    { id: 'hotel', name: 'Hôtel', emoji: '🏨', desc: 'Chambre', type: 'preserve',
+      prompt: 'hotel room, pool, view, luxury. Preserve the exact subject identity.' }
+]);
+
+// ─── VOYAGE ───
+addStyles('travel', [
+    { id: 'postcard', name: 'Carte Postale', emoji: '📮', desc: 'Monument', type: 'preserve',
+      prompt: 'animated postcard, monument coming to life, travel. Preserve the exact subject identity.' },
+    { id: 'guide', name: 'Guide Touristique', emoji: '🗺️', desc: 'Lieu', type: 'preserve',
+      prompt: 'tourist guide, location, history, tips. Preserve the exact subject identity.' },
+    { id: 'roadtrip', name: 'Road Trip', emoji: '🚗', desc: 'Route', type: 'preserve',
+      prompt: 'road trip, highway, landscape, stops. Preserve the exact subject identity.' },
+    { id: 'cruise', name: 'Croisière', emoji: '🛳️', desc: 'Mer', type: 'preserve',
+      prompt: 'cruise ship, sea, ports, luxury travel. Preserve the exact subject identity.' },
+    { id: 'safari', name: 'Safari', emoji: '🦁', desc: 'Animaux', type: 'preserve',
+      prompt: 'safari, wild animals, savanna, sunset. Preserve the exact subject identity.' },
+    { id: 'mountain', name: 'Montagne', emoji: '🏔️', desc: 'Sommet', type: 'preserve',
+      prompt: 'mountain, summit, snow, hiking. Preserve the exact subject identity.' },
+    { id: 'beach', name: 'Plage Paradisiaque', emoji: '🏖️', desc: 'Sable', type: 'preserve',
+      prompt: 'paradise beach, sand, palm trees, waves. Preserve the exact subject identity.' },
+    { id: 'city-night', name: 'Ville Nocturne', emoji: '🌃', desc: 'Lumières', type: 'preserve',
+      prompt: 'city at night, lights, traffic, urban life. Preserve the exact subject identity.' }
+]);
+
+// ─── HISTOIRE ───
+addStyles('history', [
+    { id: 'prehistoric', name: 'Préhistoire', emoji: '🦕', desc: 'Dinosaures', type: 'preserve',
+      prompt: 'prehistoric era, dinosaurs, volcanoes, wild nature. Preserve the exact subject identity.' },
+    { id: 'egypt', name: 'Égypte Antique', emoji: '🏛️', desc: 'Pyramides', type: 'preserve',
+      prompt: 'ancient Egypt, pyramids, hieroglyphs, pharaoh. Preserve the exact subject identity.' },
+    { id: 'greece', name: 'Grèce Antique', emoji: '🏺', desc: 'Temple', type: 'preserve',
+      prompt: 'ancient Greece, temple, philosophers, mythology. Preserve the exact subject identity.' },
+    { id: 'rome', name: 'Rome Antique', emoji: '🏛️', desc: 'Colisée', type: 'preserve',
+      prompt: 'ancient Rome, Colosseum, legions, emperor. Preserve the exact subject identity.' },
+    { id: 'medieval', name: 'Moyen Âge', emoji: '🏰', desc: 'Château', type: 'preserve',
+      prompt: 'medieval era, castle, knights, tournament. Preserve the exact subject identity.' },
+    { id: 'renaissance', name: 'Renaissance', emoji: '🎨', desc: 'Art', type: 'preserve',
+      prompt: 'Renaissance era, art, inventors, city-states. Preserve the exact subject identity.' },
+    { id: '1920s', name: 'Années 1920', emoji: '🎩', desc: 'Charleston', type: 'preserve',
+      prompt: '1920s era, Charleston, Art Deco, jazz age. Preserve the exact subject identity.' },
+    { id: '1950s', name: 'Années 1950', emoji: '🚗', desc: 'Rock\'n\'roll', type: 'preserve',
+      prompt: '1950s era, rock and roll, classic cars, drive-in. Preserve the exact subject identity.' },
+    { id: '1980s', name: 'Années 1980', emoji: '📼', desc: 'Néons, VHS', type: 'preserve',
+      prompt: '1980s era, neon, VHS, synthwave, retro. Preserve the exact subject identity.' },
+    { id: '2000s', name: 'Années 2000', emoji: '💿', desc: 'Y2K', type: 'preserve',
+      prompt: '2000s era, Y2K aesthetic, MSN, early internet. Preserve the exact subject identity.' },
+    { id: 'future-2100', name: 'Futur 2100', emoji: '🌌', desc: 'High-tech', type: 'preserve',
+      prompt: 'future 2100, high-tech city, AI, robots, advanced. Preserve the exact subject identity.' }
+]);
+
+// ─── ART ───
+addStyles('art', [
+    { id: 'impressionism', name: 'Impressionnisme', emoji: '🌻', desc: 'Monet', type: 'stylize',
+      prompt: 'impressionist painting style, visible brushstrokes, light effects, Monet Renoir. Transform the entire image into this impressionist style.' },
+    { id: 'cubism', name: 'Cubisme', emoji: '🔷', desc: 'Picasso', type: 'stylize',
+      prompt: 'cubist painting style, geometric shapes, multiple viewpoints, Picasso Braque. Transform the entire image into this cubist style.' },
+    { id: 'surrealism', name: 'Surréalisme', emoji: '🌀', desc: 'Dali', type: 'stylize',
+      prompt: 'surrealist painting style, dreamlike, impossible juxtapositions, Salvador Dali. Transform the entire image into this surrealist style.' },
+    { id: 'art-nouveau', name: 'Art Nouveau', emoji: '🌸', desc: 'Mucha', type: 'stylize',
+      prompt: 'Art Nouveau style, flowing curves, floral ornaments, Alphonse Mucha. Transform the entire image into this Art Nouveau style.' },
+    { id: 'art-deco', name: 'Art Déco', emoji: '✨', desc: 'Géométrie dorée', type: 'stylize',
+      prompt: 'Art Deco style, geometric patterns, gold accents, 1920s. Transform the entire image into this Art Deco style.' },
+    { id: 'bauhaus', name: 'Bauhaus', emoji: '🟥', desc: 'Minimalisme', type: 'stylize',
+      prompt: 'Bauhaus style, minimalism, geometric shapes, primary colors. Transform the entire image into this Bauhaus style.' },
+    { id: 'expressionism', name: 'Expressionnisme', emoji: '😱', desc: 'Émotion brute', type: 'stylize',
+      prompt: 'expressionist painting style, distorted forms, intense colors, raw emotion. Transform the entire image into this expressionist style.' },
+    { id: 'baroque', name: 'Baroque', emoji: '👑', desc: 'Opulence', type: 'stylize',
+      prompt: 'Baroque style, opulence, dramatic movement, theatrical lighting. Transform the entire image into this Baroque style.' },
+    { id: 'watercolor', name: 'Aquarelle', emoji: '🎨', desc: 'Fusion douce', type: 'stylize',
+      prompt: 'watercolor painting aesthetic, soft bleeding edges, translucent washes, paper texture. Transform the entire image into this watercolor style.' },
+    { id: 'oil', name: 'Peinture à l\'huile', emoji: '🖼️', desc: 'Huile classique', type: 'stylize',
+      prompt: 'oil painting style, visible impasto brushstrokes, rich textured paint, old master. Transform the entire image into this oil painting style.' },
+    { id: 'sketch', name: 'Croquis Crayon', emoji: '✏️', desc: 'Dessin crayon', type: 'stylize',
+      prompt: 'pencil sketch style, graphite drawing, hatching, sketch paper texture. Transform the entire image into this pencil sketch style.' },
+    { id: 'ink', name: 'Encre / Lavis', emoji: '🖋️', desc: 'Encre noire', type: 'stylize',
+      prompt: 'ink wash painting style, sumi-e, black ink, minimal brushstrokes. Transform the entire image into this ink style.' }
+]);
+
+// ─── ILLUSIONS ───
+addStyles('illusion', [
+    { id: 'trompe-loeil', name: 'Trompe-l\'œil', emoji: '🎭', desc: 'Sortir du cadre', type: 'preserve',
+      prompt: 'trompe l\'oeil effect, image appears to break out of frame, 3D illusion. Preserve the exact subject identity.' },
+    { id: 'anamorphose', name: 'Anamorphose', emoji: '📐', desc: 'Déformée', type: 'preserve',
+      prompt: 'anamorphic illusion, distorted image revealed from angle. Preserve the exact subject identity.' },
+    { id: 'double-sens', name: 'Double Sens', emoji: '👀', desc: 'Deux images', type: 'stylize',
+      prompt: 'dual meaning image, two images in one, optical illusion. Transform the entire image into this illusion style.' },
+    { id: 'escher', name: 'Escher', emoji: '🪜', desc: 'Escaliers impossibles', type: 'stylize',
+      prompt: 'M.C. Escher style, impossible stairs, paradox illusions, mathematical art. Transform the entire image into this Escher style.' },
+    { id: 'optical', name: 'Illusion Optique', emoji: '🌀', desc: 'Mouvement', type: 'stylize',
+      prompt: 'optical illusion art, perceived movement, op-art, hypnotic patterns. Transform the entire image into this optical illusion style.' },
+    { id: 'reflection', name: 'Réflexion Infinie', emoji: '🪞', desc: 'Miroirs', type: 'preserve',
+      prompt: 'infinite reflection, mirrors, repetition, recursive. Preserve the exact subject identity.' }
+]);
+
+// ─── SOCIAL ───
+addStyles('social', [
+    { id: 'tiktok-hook', name: 'TikTok Hook', emoji: '📱', desc: '3s captivantes', type: 'preserve',
+      prompt: 'TikTok viral hook, attention-grabbing first 3 seconds. Preserve the exact subject identity.' },
+    { id: 'reel-transition', name: 'Reel Transition', emoji: '🔄', desc: 'Virale', type: 'preserve',
+      prompt: 'viral Instagram Reel transition, smooth effect. Preserve the exact subject identity.' },
+    { id: 'youtube-intro', name: 'YouTube Intro', emoji: '▶️', desc: 'Logo animé', type: 'preserve',
+      prompt: 'YouTube intro, animated logo, music, branding. Preserve the exact subject identity.' },
+    { id: 'short-loop', name: 'Short Loop', emoji: '🔁', desc: 'Boucle', type: 'preserve',
+      prompt: 'perfect loop short video, seamless. Preserve the exact subject identity.' },
+    { id: 'story-ig', name: 'Story Instagram', emoji: '📸', desc: 'Sondage', type: 'preserve',
+      prompt: 'Instagram story, poll, question, swipe up. Preserve the exact subject identity.' },
+    { id: 'before-after', name: 'Before / After', emoji: '🔀', desc: 'Transformation', type: 'preserve',
+      prompt: 'before and after transformation, shocking reveal. Preserve the exact subject identity.' }
+]);
+
+// ─── SCIENCE ───
+addStyles('science', [
+    { id: 'dna', name: 'ADN', emoji: '🧬', desc: 'Double hélice', type: 'preserve',
+      prompt: 'DNA double helix rotating, molecular structure. Preserve the exact subject identity.' },
+    { id: 'cell', name: 'Cellule', emoji: '🔬', desc: 'Mitose', type: 'preserve',
+      prompt: 'cell biology, mitosis, organelles, microscopic. Preserve the exact subject identity.' },
+    { id: 'brain', name: 'Cerveau', emoji: '🧠', desc: 'Neurones', type: 'preserve',
+      prompt: 'brain activity, neurons, synapses firing. Preserve the exact subject identity.' },
+    { id: 'space', name: 'Espace', emoji: '🌌', desc: 'Galaxie', type: 'preserve',
+      prompt: 'deep space, galaxy, black hole, nebula. Preserve the exact subject identity.' },
+    { id: 'quantum', name: 'Quantique', emoji: '⚛️', desc: 'Particules', type: 'preserve',
+      prompt: 'quantum physics, particles, superposition. Preserve the exact subject identity.' },
+    { id: 'nanotech', name: 'Nanotechnologie', emoji: '🔬', desc: 'Microscopique', type: 'preserve',
+      prompt: 'nanotechnology, microscopic machines, molecular scale. Preserve the exact subject identity.' }
+]);
+
+// ─── FANTASY ───
+addStyles('fantasy', [
+    { id: 'dragon', name: 'Dragon', emoji: '🐉', desc: 'Vol, feu', type: 'preserve',
+      prompt: 'dragon flying, fire breathing, scales, fantasy. Preserve the exact subject identity.' },
+    { id: 'unicorn', name: 'Licorne', emoji: '🦄', desc: 'Magique', type: 'preserve',
+      prompt: 'magical unicorn, enchanted forest, rainbow, sparkles. Preserve the exact subject identity.' },
+    { id: 'mermaid', name: 'Sirène', emoji: '🧜', desc: 'Océan', type: 'preserve',
+      prompt: 'mermaid, ocean, tail, underwater, singing. Preserve the exact subject identity.' },
+    { id: 'phoenix', name: 'Phénix', emoji: '🔥', desc: 'Renaissance', type: 'preserve',
+      prompt: 'phoenix rising from flames, rebirth, fire bird. Preserve the exact subject identity.' },
+    { id: 'werewolf', name: 'Loup-garou', emoji: '🐺', desc: 'Pleine lune', type: 'preserve',
+      prompt: 'werewolf transformation, full moon, forest, howling. Preserve the exact subject identity.' },
+    { id: 'vampire', name: 'Vampire', emoji: '🧛', desc: 'Nuit', type: 'preserve',
+      prompt: 'vampire, night, castle, fangs, gothic. Preserve the exact subject identity.' },
+    { id: 'ghost', name: 'Fantôme', emoji: '👻', desc: 'Apparition', type: 'preserve',
+      prompt: 'ghost apparition, transparency, cold, haunted. Preserve the exact subject identity.' },
+    { id: 'angel', name: 'Ange', emoji: '😇', desc: 'Ailes, halo', type: 'preserve',
+      prompt: 'angel, wings, halo, divine light. Preserve the exact subject identity.' },
+    { id: 'demon', name: 'Démon', emoji: '😈', desc: 'Cornes, feu', type: 'preserve',
+      prompt: 'demon, horns, fire, dark energy. Preserve the exact subject identity.' },
+    { id: 'norse-god', name: 'Dieu Nordique', emoji: '⚡', desc: 'Thor', type: 'preserve',
+      prompt: 'norse god, Thor, hammer, thunder, Valhalla. Preserve the exact subject identity.' },
+    { id: 'abyss', name: 'Créature des Abysses', emoji: '🦑', desc: 'Profondeur', type: 'preserve',
+      prompt: 'abyssal creature, deep ocean, tentacles, bioluminescence. Preserve the exact subject identity.' }
+]);
+
+// ─── GENRES ───
+addStyles('genre', [
+    { id: 'western', name: 'Western', emoji: '🤠', desc: 'Duel', type: 'preserve',
+      prompt: 'western movie style, duel, dust, sunset, cowboy. Preserve the exact subject identity.' },
+    { id: 'polar', name: 'Polar', emoji: '🕵️', desc: 'Enquête', type: 'preserve',
+      prompt: 'detective noir style, investigation, rain, trench coat. Preserve the exact subject identity.' },
+    { id: 'horror', name: 'Horreur', emoji: '👻', desc: 'Saut', type: 'preserve',
+      prompt: 'horror movie style, jump scare, shadow, silence, dread. Preserve the exact subject identity.' },
+    { id: 'comedy', name: 'Comédie', emoji: '😂', desc: 'Gag', type: 'preserve',
+      prompt: 'comedy style, gag, timing, expressive faces. Preserve the exact subject identity.' },
+    { id: 'romance', name: 'Romance', emoji: '💕', desc: 'Regard', type: 'preserve',
+      prompt: 'romance movie style, tender gaze, rain, kiss. Preserve the exact subject identity.' },
+    { id: 'scifi', name: 'Science-Fiction', emoji: '🚀', desc: 'Futur', type: 'preserve',
+      prompt: 'science fiction movie style, futuristic, technology. Preserve the exact subject identity.' },
+    { id: 'fantasy-genre', name: 'Fantasy', emoji: '🧝', desc: 'Quête', type: 'preserve',
+      prompt: 'fantasy movie style, quest, magic, creature. Preserve the exact subject identity.' },
+    { id: 'thriller', name: 'Thriller', emoji: '😰', desc: 'Tension', type: 'preserve',
+      prompt: 'thriller movie style, tension, chase, twist. Preserve the exact subject identity.' },
+    { id: 'war', name: 'Guerre', emoji: '⚔️', desc: 'Champ', type: 'preserve',
+      prompt: 'war movie style, battlefield, soldier, sacrifice. Preserve the exact subject identity.' },
+    { id: 'spy', name: 'Espionnage', emoji: '🕶️', desc: 'Gadget', type: 'preserve',
+      prompt: 'spy movie style, gadgets, infiltration, twist. Preserve the exact subject identity.' },
+    { id: 'disaster-genre', name: 'Catastrophe', emoji: '🌊', desc: 'Chaos', type: 'preserve',
+      prompt: 'disaster movie style, chaos, survival, rescue. Preserve the exact subject identity.' },
+    { id: 'musical', name: 'Comédie Musicale', emoji: '🎭', desc: 'Danse', type: 'preserve',
+      prompt: 'musical movie style, dance, singing, colorful. Preserve the exact subject identity.' }
+]);
+
+// ─── AVANCÉ ───
+addStyles('advanced', [
+    { id: 'rotoscopie', name: 'Rotoscopie', emoji: '🎞️', desc: 'Animation sur réel', type: 'stylize',
+      prompt: 'rotoscope animation style, traced over live-action, A Scanner Darkly. Transform the entire image into this rotoscope style.' },
+    { id: 'cel-shading', name: 'Cel Shading', emoji: '🎨', desc: 'Cartoon 3D', type: 'stylize',
+      prompt: 'cel shaded 3D style, cartoon rendering, flat colors, outline. Transform the entire image into this cel shaded style.' },
+    { id: 'pixel-art', name: 'Pixel Art', emoji: '👾', desc: '8/16 bits', type: 'stylize',
+      prompt: 'pixel art style, 8-bit or 16-bit, retro game. Transform the entire image into this pixel art style.' },
+    { id: 'vector', name: 'Vectoriel', emoji: '🔷', desc: 'Plat', type: 'stylize',
+      prompt: 'flat vector illustration style, clean outlines, solid colors. Transform the entire image into this vector style.' },
+    { id: 'engraving', name: 'Gravure', emoji: '🖋️', desc: 'Hachures', type: 'stylize',
+      prompt: 'engraving style, hatching, ink lines, antique print. Transform the entire image into this engraving style.' },
+    { id: 'stained-glass', name: 'Vitrail', emoji: '⛪', desc: 'Plomb', type: 'stylize',
+      prompt: 'stained glass window style, lead lines, colored glass, light through. Transform the entire image into this stained glass style.' },
+    { id: 'mosaic', name: 'Mosaïque', emoji: '🔶', desc: 'Tesselles', type: 'stylize',
+      prompt: 'mosaic style, small tiles, ancient art. Transform the entire image into this mosaic style.' },
+    { id: 'origami', name: 'Origami', emoji: '🦢', desc: 'Papier plié', type: 'stylize',
+      prompt: 'origami style, folded paper, geometric creases. Transform the entire image into this origami style.' },
+    { id: 'papercut', name: 'Papercut', emoji: '✂️', desc: 'Découpe papier', type: 'stylize',
+      prompt: 'papercut art style, layered paper, shadows, depth. Transform the entire image into this papercut style.' },
+    { id: 'neon-sign', name: 'Néon Sign', emoji: '💡', desc: 'Tube lumineux', type: 'stylize',
+      prompt: 'neon sign style, glowing tubes, night, dark background. Transform the entire image into this neon style.' },
+    { id: 'hologram', name: 'Hologramme', emoji: '🔮', desc: 'Transparence', type: 'stylize',
+      prompt: 'hologram style, transparent, scanlines, blue glow. Transform the entire image into this hologram style.' },
+    { id: 'xray', name: 'X-Ray', emoji: '🦴', desc: 'Vue à travers', type: 'stylize',
+      prompt: 'x-ray style, see through, skeletal, medical. Transform the entire image into this x-ray style.' },
+    { id: 'thermal', name: 'Thermique', emoji: '🌡️', desc: 'Infrarouge', type: 'stylize',
+      prompt: 'thermal camera style, infrared, heat map colors. Transform the entire image into this thermal style.' },
+    { id: 'glitch', name: 'Glitch & VHS', emoji: '📺', desc: 'Magnétoscope', type: 'stylize',
+      prompt: 'glitch and VHS style, tracking errors, static, retro video. Transform the entire image into this glitch style.' },
+    { id: 'double-exposure', name: 'Double Exposition', emoji: '🌫️', desc: 'Superposition', type: 'stylize',
+      prompt: 'double exposure style, overlaid images, dreamlike. Transform the entire image into this double exposure style.' },
+    { id: 'kaleidoscope', name: 'Kaléidoscope', emoji: '🔮', desc: 'Symétrie', type: 'stylize',
+      prompt: 'kaleidoscope effect, symmetrical patterns, hypnotic. Transform the entire image into this kaleidoscope style.' }
+]);
+
+// ─── RANDOM / PRESETS ───
+const RANDOM_ACTIONS = [
+    'the subject slowly raises a hand toward the camera, fingers trembling slightly',
+    'a single tear rolls down the subject\'s cheek in extreme slow motion',
+    'the subject turns their head slowly, eyes closing, breathing softly',
+    'the subject\'s hair moves gently in an imperceptible breeze',
+    'the subject stands still, only their chest rising and falling with breath',
+    'the subject\'s eyes open slowly, revealing an intense gaze directly at the camera',
+    'the subject extends a hand as if reaching for something just out of frame',
+    'the subject lifts their chin slightly, a silent gesture of presence',
+    'the subject walks slowly toward the camera, each step deliberate',
+    'the subject looks down at their own hands, discovering them for the first time',
+    'the subject\'s body shivers involuntarily, a wave of emotion passing through',
+    'the subject leans forward slightly, closing the distance with the viewer'
+];
+
+const RANDOM_CAMERA = [
+    'slow dolly-in, camera gliding forward almost imperceptibly',
+    'static locked-off frame, subject moves within fixed borders',
+    'handheld, slight tremor, camera breathing with the subject',
+    'slow pan following the subject\'s movement',
+    'subtle parallax movement revealing depth',
+    'high angle looking down, subject appears small and vulnerable',
+    'low angle looking up, subject appears powerful',
+    'rack focus from foreground to subject',
+    'camera drifts backward slowly, revealing a bit more of the environment'
+];
+
+const RANDOM_LIGHTING = [
+    'soft diffused natural light',
+    'warm golden hour backlight',
+    'dramatic side lighting with deep shadows',
+    'gentle ambient glow, almost shadowless',
+    'cool moonlight atmosphere',
+    'warm interior candlelight flicker',
+    'cinematic rim lighting emphasizing the silhouette'
+];
+
+const FRAMING_PRESETS = {
+    close: 'extreme close-up framing, tight on the subject, intimate and intense',
+    medium: 'medium shot, subject framed from waist up, balanced composition',
+    wide: 'wide shot, subject framed with the environment visible'
+};
+
+const INTENSITY_PRESETS = {
+    subtle: 'very subtle movement, barely perceptible change, minimal animation',
+    moderate: 'moderate movement, clear but controlled motion, balanced energy',
+    strong: 'strong dynamic movement, energetic motion, pronounced physical action'
+};
+
+const CAMERA_SPEED_PRESETS = {
+    slow: 'extreme slow motion, bullet-time effect, every frame deliberate',
+    medium: 'normal speed with selective slow-motion moments',
+    fast: 'fast-paced frenetic action, quick cuts, high energy'
+};
+
+// ══════════════════════════════════════════════════════════════════
+// ÉTAT GLOBAL
+// ══════════════════════════════════════════════════════════════════
+const state = {
+    images: [],
+    isRunning: false,
+    stopRequested: false,
+    queue: [],
+    completed: 0,
+    failed: 0,
+    selectedStyle: null,
+    activeCategory: 'ambiance',
+    searchQuery: '',
+    mainPrompt: '',
+    framing: 'random',
+    intensity: 'moderate',
+    cameraSpeed: 'random',
+    transformMode: 'auto',
+    durationFrames: 153,
+    isLoadingImages: false,
+    creationAttemptsSinceLastError: 0
+};
+
+// ══════════════════════════════════════════════════════════════════
+// CLÉ API
+// ══════════════════════════════════════════════════════════════════
+function getApiKey() {
+    try { return (localStorage.getItem(API_KEY_STORAGE) || '').trim(); }
+    catch (e) { return ''; }
+}
+
+function saveApiKey() {
+    const input = document.getElementById('api-key-input');
+    if (!input) return;
+    const key = input.value.trim();
+    if (!key) {
+        try { localStorage.removeItem(API_KEY_STORAGE); } catch (e) {}
+        updateApiPanel();
+        showToast('Clé supprimée', 'warn');
+        return;
+    }
+    if (!key.startsWith('sk-')) {
+        if (!confirm('La clé ne commence pas par "sk-". La sauvegarder quand même ?')) return;
+    }
+    try {
+        localStorage.setItem(API_KEY_STORAGE, key);
+        updateApiPanel();
+        showToast('Clé API enregistrée ✓', 'success');
+        input.blur();
+    } catch (e) {
+        showToast('Erreur lors de la sauvegarde', 'error');
+    }
+}
+
+function updateApiPanel() {
+    const panel = document.getElementById('api-panel');
+    const input = document.getElementById('api-key-input');
+    const statusLine = document.getElementById('api-status-line');
+    const statusText = document.getElementById('api-status-text');
+    const key = getApiKey();
+    if (!panel || !input || !statusLine || !statusText) return;
+    if (key) {
+        panel.classList.add('ok');
+        statusLine.classList.add('ok');
+        statusText.textContent = 'Clé API active · ' + key.slice(0, 8) + '…' + key.slice(-4);
+        input.value = key;
+        input.placeholder = '';
+    } else {
+        panel.classList.remove('ok');
+        statusLine.classList.remove('ok');
+        statusText.textContent = 'Aucune clé API enregistrée';
+        input.value = '';
+        input.placeholder = 'Collez votre clé API ici (sk-...)';
+    }
+    updateGenerateBtn();
+}
+
+function updateGenerateBtn() {
+    const btn = document.getElementById('generate-btn');
+    if (!btn) return;
+    const hasImages = state.images.length > 0;
+    const hasKey = !!getApiKey();
+    btn.disabled = !hasImages || !hasKey || state.isRunning || state.isLoadingImages;
+    if (state.isLoadingImages) {
+        btn.textContent = 'Chargement des images… (' + state.images.length + ')';
+    } else if (state.isRunning) {
+        const total = state.queue.length;
+        const done = state.completed + state.failed;
+        btn.textContent = 'Création en cours… (' + done + '/' + total + ')';
+    } else if (!hasKey) {
+        btn.textContent = 'Ajoutez votre clé API';
+    } else if (!hasImages) {
+        btn.textContent = 'Ajoutez des images';
+    } else {
+        btn.textContent = '✦ Créer ' + state.images.length + ' vidéo' + (state.images.length > 1 ? 's' : '') + ' ✦';
+    }
+}
+
+// ══════════════════════════════════════════════════════════════════
+// UTILITAIRES
+// ══════════════════════════════════════════════════════════════════
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+function log(msg) { console.log('[MegaStudio] ' + msg); }
+function setStatus(text) {
+    const bar = document.getElementById('status-bar');
+    const txt = document.getElementById('status-text');
+    if (!bar || !txt) return;
+    if (text) { bar.classList.add('visible'); txt.textContent = text; }
+    else bar.classList.remove('visible');
+}
+function randomItem(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, c => (
+        { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+    ));
+}
+function formatEta(seconds) {
+    if (seconds < 60) return Math.round(seconds) + 's';
+    const m = Math.floor(seconds / 60);
+    const s = Math.round(seconds % 60);
+    return m + 'm' + (s > 0 ? ' ' + s + 's' : '');
+}
+
+// ══════════════════════════════════════════════════════════════════
+// TRAITEMENT DES IMAGES
+// ══════════════════════════════════════════════════════════════════
+function fileToDataUri(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = e => resolve(e.target.result);
+        reader.onerror = () => reject(new Error('Erreur lecture'));
+        reader.readAsDataURL(file);
+    });
+}
+
+function generateThumbnail(dataUri) {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+            try {
+                const canvas = document.createElement('canvas');
+                const ratio = img.height / img.width;
+                canvas.width = THUMBNAIL_MAX_WIDTH;
+                canvas.height = Math.round(THUMBNAIL_MAX_WIDTH * ratio);
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                resolve(canvas.toDataURL('image/jpeg', 0.7));
+            } catch (e) { resolve(dataUri); }
+        };
+        img.onerror = () => resolve(dataUri);
+        img.src = dataUri;
+    });
+}
+
+async function processOneFile(file) {
+    if (!file.type.startsWith('image/')) return null;
+    if (file.size > MAX_IMAGE_SIZE) return null;
+    try {
+        const dataUri = await fileToDataUri(file);
+        const thumbnail = await generateThumbnail(dataUri);
+        return { file: file, dataUri: dataUri, thumbnail: thumbnail, id: Date.now() + Math.random() };
+    } catch (e) { return null; }
+}
+
+async function handleFiles(files) {
+    const imageFiles = Array.from(files).filter(f => f.type.startsWith('image/'));
+    if (!imageFiles.length) return;
+    state.isLoadingImages = true;
+    updateGenerateBtn();
+    setStatus('Chargement de ' + imageFiles.length + ' image' + (imageFiles.length > 1 ? 's' : '') + '…');
+    const uploadZone = document.getElementById('upload-zone');
+    uploadZone.classList.add('loading');
+    const BATCH = 5;
+    let processed = 0;
+    for (let i = 0; i < imageFiles.length; i += BATCH) {
+        const batch = imageFiles.slice(i, i + BATCH);
+        const results = await Promise.allSettled(batch.map(f => processOneFile(f)));
+        for (const r of results) {
+            if (r.status === 'fulfilled' && r.value) {
+                state.images.push(r.value);
+                processed++;
+            }
+        }
+        renderImages();
+        setStatus('Chargement des images… ' + processed + '/' + imageFiles.length);
+    }
+    state.isLoadingImages = false;
+    uploadZone.classList.remove('loading');
+    setStatus(null);
+    updateGenerateBtn();
+}
+
+function removeImage(id) {
+    state.images = state.images.filter(img => img.id !== id);
+    renderImages();
+}
+
+function renderImages() {
+    const grid = document.getElementById('images-grid');
+    grid.innerHTML = state.images.map(img => {
+        return '<div class="image-card">' +
+            '<img src="' + (img.thumbnail || img.dataUri) + '" alt="" loading="lazy">' +
+            '<button class="remove-btn" data-remove="' + img.id + '">✕</button>' +
+            '</div>';
+    }).join('');
+    grid.querySelectorAll('[data-remove]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            removeImage(parseFloat(btn.dataset.remove));
+        });
+    });
+}
+
+// ══════════════════════════════════════════════════════════════════
+// RENDU — PRESETS
+// ══════════════════════════════════════════════════════════════════
+function renderPromptPresets() {
+    const container = document.getElementById('prompt-presets');
+    container.innerHTML = PROMPT_PRESETS.map((p, i) => {
+        return '<div class="prompt-preset" data-preset="' + i + '">' + esc(p.label) + '</div>';
+    }).join('');
+    container.querySelectorAll('.prompt-preset').forEach(el => {
+        el.addEventListener('click', () => {
+            const idx = parseInt(el.dataset.preset, 10);
+            const preset = PROMPT_PRESETS[idx];
+            if (!preset) return;
+            const ta = document.getElementById('main-prompt');
+            ta.value = preset.text;
+            state.mainPrompt = preset.text;
+            ta.focus();
+            showToast('Exemple appliqué', 'success', 1200);
+        });
+    });
+}
+
+function renderCategoryTabs() {
+    const container = document.getElementById('category-tabs');
+    container.innerHTML = CATEGORIES.map(c => {
+        return '<div class="category-tab ' + (state.activeCategory === c.id ? 'active' : '') + '" data-cat="' + c.id + '">' + esc(c.name) + '</div>';
+    }).join('');
+    container.querySelectorAll('.category-tab').forEach(el => {
+        el.addEventListener('click', () => {
+            state.activeCategory = el.dataset.cat;
+            renderCategoryTabs();
+            renderStyles();
+        });
+    });
+}
+
+function renderStyles() {
+    const container = document.getElementById('styles-grid');
+    const query = state.searchQuery.trim().toLowerCase();
+    let filtered = ALL_STYLES;
+    if (query) {
+        filtered = ALL_STYLES.filter(s =>
+            s.name.toLowerCase().includes(query) ||
+            s.desc.toLowerCase().includes(query) ||
+            s.id.toLowerCase().includes(query)
+        );
+    } else {
+        filtered = ALL_STYLES.filter(s => s.cat === state.activeCategory);
+    }
+    let html = '';
+    html += '<div class="no-style-card ' + (state.selectedStyle === null ? 'selected' : '') + '" data-effect="none">' +
+        (state.selectedStyle === null
+            ? '✓ Aucun style sélectionné — votre prompt seul gère les vidéos'
+            : '🚫 Aucun style (utiliser seulement mon prompt)') +
+        '</div>';
+    if (query) {
+        html += '<div class="style-category-header">🔍 Résultats pour "' + esc(query) + '" (' + filtered.length + ')</div>';
+    } else {
+        const cat = CATEGORIES.find(c => c.id === state.activeCategory);
+        if (cat) {
+            html += '<div class="style-category-header">' + esc(cat.name) + '</div>';
+            html += '<div class="style-category-desc">' + esc(cat.desc) + '</div>';
+        }
+    }
+    if (filtered.length === 0) {
+        html += '<div class="style-category-desc" style="text-align:center; padding:1rem;">Aucun style trouvé. Essayez un autre mot-clé.</div>';
+    } else {
+        html += filtered.map(s => {
+            return '<div class="style-card ' + (state.selectedStyle === s.id ? 'selected' : '') + '" data-effect="' + s.id + '">' +
+                '<div class="style-emoji">' + s.emoji + '</div>' +
+                '<div>' +
+                    '<div class="style-name">' + esc(s.name) + '</div>' +
+                    '<div class="style-desc">' + esc(s.desc) + '</div>' +
+                '</div>' +
+            '</div>';
+        }).join('');
+    }
+    container.innerHTML = html;
+    container.querySelectorAll('[data-effect]').forEach(el => {
+        el.addEventListener('click', () => {
+            const val = el.dataset.effect;
+            state.selectedStyle = (val === 'none') ? null : val;
+            renderStyles();
+            updateSelectedInfo();
+        });
+    });
+}
+
+function updateSelectedInfo() {
+    const el = document.getElementById('selected-info');
+    if (!el) return;
+    const style = state.selectedStyle ? ALL_STYLES.find(s => s.id === state.selectedStyle) : null;
+    if (!style) {
+        el.innerHTML = '🎨 <strong>Aucun style sélectionné</strong> — votre prompt seul sera utilisé.';
+        return;
+    }
+    const typeLabel = style.type === 'stylize' ? '🎭 Transformation' : '✨ Ambiance';
+    el.innerHTML = style.emoji + ' <strong>' + esc(style.name) + '</strong> — ' + typeLabel + '<br>' +
+        '<span style="opacity:0.7;">' + esc(style.desc) + '</span>';
+}
+
+// ══════════════════════════════════════════════════════════════════
+// CONSTRUCTION DU PROMPT
+// ══════════════════════════════════════════════════════════════════
+function buildPrompt() {
+    const style = state.selectedStyle ? ALL_STYLES.find(s => s.id === state.selectedStyle) : null;
+    const hasUserPrompt = state.mainPrompt && state.mainPrompt.trim().length > 0;
+    const parts = [];
+    let transformMode = state.transformMode;
+    if (transformMode === 'auto') {
+        if (style && style.type === 'stylize') transformMode = 'stylize';
+        else transformMode = 'preserve';
+    }
+    if (transformMode === 'stylize') {
+        parts.push('Animate this image as the starting frame. Transform the entire image into the following artistic style:');
+    } else {
+        parts.push(
+            'Animate this exact image as the starting frame. ' +
+            'The subject must remain IDENTICAL to the input image: same face, same expression, same clothing, same pose, same identity. ' +
+            'This is a CONTINUATION of the source image, not a re-imagination. ' +
+            'Preserve the exact composition, framing, and layout of the original image. ' +
+            'The camera does NOT change the subject. Only subtle motion, breathing, light, and atmosphere are animated.'
+        );
+    }
+    if (style) {
+        parts.push(style.prompt);
+        if (transformMode === 'stylize') {
+            parts.push('Maintain the same subject, pose, and composition as the source image, but reinterpret everything in this new style.');
+        }
+    }
+    if (hasUserPrompt) {
+        if (transformMode === 'stylize') {
+            parts.push('Additional artistic direction (applied on top of the style): ' + state.mainPrompt.trim());
+        } else {
+            parts.push('Artistic direction (highest priority, must not change the subject identity or composition): ' + state.mainPrompt.trim());
+        }
+    }
+    if (state.framing !== 'random' && FRAMING_PRESETS[state.framing]) {
+        parts.push(FRAMING_PRESETS[state.framing]);
+    }
+    if (state.intensity !== 'random' && INTENSITY_PRESETS[state.intensity]) {
+        parts.push(INTENSITY_PRESETS[state.intensity]);
+    }
+    if (state.cameraSpeed !== 'random' && CAMERA_SPEED_PRESETS[state.cameraSpeed]) {
+        parts.push(CAMERA_SPEED_PRESETS[state.cameraSpeed]);
+    }
+    parts.push(randomItem(RANDOM_ACTIONS));
+    parts.push(randomItem(RANDOM_CAMERA));
+    parts.push(randomItem(RANDOM_LIGHTING));
+    parts.push('Portrait orientation 9:16 vertical, 24fps, no text, no subtitles, no watermarks, consistent character design with the source image');
+    return parts.join('. ');
+}
+
+// ══════════════════════════════════════════════════════════════════
+// API AGNES
+// ══════════════════════════════════════════════════════════════════
+async function apiFetch(url, options = {}, label = 'API') {
+    for (let attempt = 0; attempt < 7; attempt++) {
+        if (state.stopRequested) throw new Error('Arrêt demandé');
+        try {
+            const res = await fetch(url, options);
+            if (res.status === 429) {
+                state.creationAttemptsSinceLastError = 0;
+                if (createIntervalMs < CREATE_INTERVAL_SAFE) {
+                    createIntervalMs = Math.min(createIntervalMs + 8000, CREATE_INTERVAL_MAX);
+                }
+                const wait = [15, 30, 45, 60, 90, 120, 180][Math.min(attempt, 6)];
+                setStatus('L\'IA se prépare… (' + wait + 's)');
+                await sleep(wait * 1000);
+                continue;
+            }
+            if (res.status === 503) {
+                const wait = [5, 10, 15, 20, 30, 45][Math.min(attempt, 5)];
+                setStatus('Votre vidéo se prépare… (' + wait + 's)');
+                await sleep(wait * 1000);
+                continue;
+            }
+            if (res.ok && createIntervalMs > CREATE_INTERVAL_MIN) {
+                state.creationAttemptsSinceLastError++;
+                if (state.creationAttemptsSinceLastError >= 3) {
+                    createIntervalMs = Math.max(createIntervalMs - 4000, CREATE_INTERVAL_MIN);
+                    state.creationAttemptsSinceLastError = 0;
+                }
+            }
+            return res;
+        } catch (e) {
+            if (e.message === 'Arrêt demandé') throw e;
+            const wait = [3, 5, 8, 12, 20, 30][Math.min(attempt, 5)];
+            setStatus('Connexion en cours… (' + wait + 's)');
+            await sleep(wait * 1000);
+        }
+    }
+    return fetch(url, options);
+}
+
+async function createVideoTask(imageDataUri, prompt) {
+    const body = {
+        model: MODEL_VIDEO,
+        prompt: prompt,
+        image: imageDataUri,
+        num_frames: state.durationFrames,
+        frame_rate: FRAME_RATE
+    };
+    const res = await apiFetch(API_BASE + '/videos', {
+        method: 'POST',
+        headers: {
+            'Authorization': 'Bearer ' + getApiKey(),
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+    }, 'Création');
+    if (!res.ok) {
+        const err = await res.text();
+        throw new Error('HTTP ' + res.status + ' — ' + err.slice(0, 200));
+    }
+    const data = await res.json();
+    const videoId = data.video_id || data.id || data.task_id;
+    if (!videoId) throw new Error('Pas de video_id retourné');
+    return videoId;
+}
+
+async function pollVideo(videoId, onProgress) {
+    const estimatedMs = estimateGenerationTime(state.durationFrames);
+    const estimatedSec = estimatedMs / 1000;
+    let remaining = Math.max(20, Math.floor(estimatedSec * 0.8));
+    while (remaining > 0) {
+        if (state.stopRequested) throw new Error('Arrêt demandé');
+        onProgress('Préparation… — ' + remaining + 's');
+        await sleep(1000);
+        remaining--;
+    }
+    for (let attempt = 0; attempt < MAX_POLL_ATTEMPTS; attempt++) {
+        if (state.stopRequested) throw new Error('Arrêt demandé');
+        if (attempt > 0) {
+            let r = POLL_INTERVAL_SEC;
+            while (r > 0) {
+                if (state.stopRequested) throw new Error('Arrêt demandé');
+                onProgress('L\'image prend vie… — ' + r + 's');
+                await sleep(1000);
+                r--;
+            }
+        }
+        const url = POLL_BASE + '?video_id=' + encodeURIComponent(videoId) + '&model_name=' + encodeURIComponent(MODEL_VIDEO);
+        const res = await apiFetch(url, {
+            method: 'GET',
+            headers: { 'Authorization': 'Bearer ' + getApiKey() }
+        }, 'Polling');
+        const d = await res.json();
+        const status = d.status || 'unknown';
+        const progress = d.progress || 0;
+        onProgress('Création… — ' + progress + '%');
+        if (status === 'completed' || status === 'succeeded' || status === 'done') {
+            const videoUrl = (d.metadata && d.metadata.url) || d.url || (d.output && d.output.url);
+            if (!videoUrl) throw new Error('Terminé mais pas d\'URL');
+            return videoUrl;
+        }
+        if (status === 'failed' || status === 'error' || status === 'cancelled') {
+            throw new Error('Échec (' + status + ')');
+        }
+    }
+    throw new Error('Délai maximal dépassé');
+}// ══════════════════════════════════════════════════════════════════
+// FILE D'ATTENTE
+// ══════════════════════════════════════════════════════════════════
+function renderQueue() {
+    const queueEl = document.getElementById('queue');
+    if (!state.queue.length) { queueEl.style.display = 'none'; return; }
+    queueEl.style.display = 'block';
+
+    const total = state.queue.length;
+    const done = state.completed + state.failed;
+    const inProgress = state.queue.filter(q => q.status === 'processing').length;
+    const pending = total - done - inProgress;
+
+    const estGen = estimateGenerationTime(state.durationFrames) / 1000;
+    const remainingCreates = pending;
+    const eta = remainingCreates > 0
+        ? (remainingCreates * (createIntervalMs / 1000)) + estGen
+        : (inProgress * estGen / Math.max(inProgress, 1));
+
+    let html = '<div class="queue-summary">' +
+        '<span class="progress-text">✨ Progression : ' + done + '/' + total + '</span>' +
+        '<span class="eta-text">' + (done < total ? '≈ ' + formatEta(eta) + ' restant' : 'Terminé') + '</span>' +
+        '</div>';
+
+    const visible = state.queue.slice(0, MAX_VISIBLE_QUEUE);
+    const hidden = state.queue.length - visible.length;
+
+    html += visible.map(item => {
+        let icon = '○', statusText = 'En attente', cls = 'pending';
+        if (item.status === 'creating') { icon = '◐'; statusText = 'Préparation…'; cls = 'creating'; }
+        else if (item.status === 'processing') { icon = '◐'; statusText = item.progress || 'En cours…'; cls = 'processing'; }
+        else if (item.status === 'done') { icon = '●'; statusText = 'Terminé'; cls = 'done'; }
+        else if (item.status === 'failed') { icon = '✕'; statusText = 'Échec'; cls = 'failed'; }
+
+        return '<div class="queue-item ' + cls + '">' +
+            '<div class="q-icon">' + icon + '</div>' +
+            '<div class="q-name">Image ' + (item.imageIndex + 1) + '</div>' +
+            '<div class="q-status">' + esc(statusText) + '</div>' +
+        '</div>';
+    }).join('');
+
+    if (hidden > 0) {
+        html += '<div class="queue-more">… et ' + hidden + ' autre' + (hidden > 1 ? 's' : '') + ' image' + (hidden > 1 ? 's' : '') + '</div>';
+    }
+
+    queueEl.innerHTML = html;
+}
+
+// ══════════════════════════════════════════════════════════════════
+// GALERIE
+// ══════════════════════════════════════════════════════════════════
+function addToGallery(videoUrl, label) {
+    const galleryEl = document.getElementById('gallery');
+    const galleryGrid = document.getElementById('gallery-grid');
+    galleryEl.style.display = 'block';
+    const el = document.createElement('div');
+    el.className = 'gallery-item';
+    el.innerHTML = '<video controls preload="metadata" muted playsinline>' +
+        '<source src="' + videoUrl + '" type="video/mp4">' +
+        '</video>' +
+        '<div class="g-caption">' + esc(label) + '</div>';
+    galleryGrid.appendChild(el);
+}
+
+// ══════════════════════════════════════════════════════════════════
+// PIPELINE
+// ══════════════════════════════════════════════════════════════════
+async function createTaskOnly(item) {
+    item.status = 'creating';
+    item.progress = 'Préparation…';
+    renderQueue();
+
+    const prompt = buildPrompt();
+    item.prompt = prompt;
+
+    log('[Image ' + (item.imageIndex + 1) + '] Création…');
+    const videoId = await createVideoTask(item.image.dataUri, prompt);
+    item.videoId = videoId;
+    item.startTime = Date.now();
+    item.status = 'processing';
+    item.progress = 'En cours…';
+    renderQueue();
+
+    log('[Image ' + (item.imageIndex + 1) + '] Tâche créée : ' + String(videoId).slice(0, 30) + '…');
+    return videoId;
+}
+
+async function pollTaskAndDisplay(item) {
+    try {
+        const videoUrl = await pollVideo(item.videoId, (prog) => {
+            item.progress = prog;
+            renderQueue();
+        });
+
+        const elapsed = Date.now() - item.startTime;
+        recordGenerationTime(state.durationFrames, elapsed);
+        log('[Image ' + (item.imageIndex + 1) + '] Terminée en ' + (elapsed / 1000).toFixed(1) + 's');
+
+        item.status = 'done';
+        item.videoUrl = videoUrl;
+        item.progress = 'Terminé';
+        state.completed++;
+        renderQueue();
+        updateGenerateBtn();
+
+        const style = item.styleId ? ALL_STYLES.find(s => s.id === item.styleId) : null;
+        const label = style ? style.emoji + ' ' + style.name + ' — Image ' + (item.imageIndex + 1) : '✦ Image ' + (item.imageIndex + 1);
+        addToGallery(videoUrl, label);
+    } catch (e) {
+        if (e.message === 'Arrêt demandé') {
+            item.status = 'failed';
+            item.progress = 'Arrêté';
+        } else {
+            log('[Image ' + (item.imageIndex + 1) + '] ' + e.message);
+            item.status = 'failed';
+            item.progress = 'Échec';
+            state.failed++;
+        }
+        renderQueue();
+        updateGenerateBtn();
+    }
+}
+
+// ══════════════════════════════════════════════════════════════════
+// WORKFLOW PRINCIPAL
+// ══════════════════════════════════════════════════════════════════
+async function startGeneration() {
+    if (state.isRunning || !state.images.length) return;
+    if (!getApiKey()) {
+        showToast('Ajoutez d\'abord votre clé API', 'error');
+        document.getElementById('api-key-input').focus();
+        return;
+    }
+
+    state.mainPrompt = document.getElementById('main-prompt').value.trim();
+
+    if (!state.mainPrompt && !state.selectedStyle) {
+        if (!confirm('Ni prompt ni style sélectionné. Continuer avec un style aléatoire ?')) {
+            return;
+        }
+    }
+
+    state.isRunning = true;
+    state.stopRequested = false;
+    state.completed = 0;
+    state.failed = 0;
+    state.creationAttemptsSinceLastError = 0;
+
+    createIntervalMs = CREATE_INTERVAL_MIN;
+
+    state.queue = state.images.map((img, i) => {
+        let styleId = state.selectedStyle;
+        if (!styleId && !state.mainPrompt) {
+            styleId = randomItem(ALL_STYLES).id;
+        }
+        return {
+            imageIndex: i,
+            image: img,
+            styleId: styleId,
+            status: 'pending',
+            progress: null,
+            videoId: null,
+            videoUrl: null,
+            prompt: null,
+            startTime: null
+        };
+    });
+
+    document.getElementById('gallery-grid').innerHTML = '';
+    document.getElementById('gallery').style.display = 'none';
+
+    document.getElementById('stop-btn').classList.add('visible');
+    document.getElementById('generate-btn').disabled = true;
+
+    await ensureWakeLockActive();
+
+    renderQueue();
+    updateGenerateBtn();
+
+    log('Démarrage — ' + state.images.length + ' vidéos');
+    log('Style global : ' + (state.selectedStyle || 'aléatoire par image'));
+
+    const totalStart = Date.now();
+    const pollingTasks = [];
+
+    try {
+        for (let i = 0; i < state.queue.length; i++) {
+            if (state.stopRequested) break;
+
+            const item = state.queue[i];
+
+            const savedStyle = state.selectedStyle;
+            state.selectedStyle = item.styleId;
+
+            try {
+                await createTaskOnly(item);
+                pollingTasks.push(pollTaskAndDisplay(item));
+            } catch (e) {
+                if (e.message === 'Arrêt demandé') {
+                    state.selectedStyle = savedStyle;
+                    break;
+                }
+                log('[Image ' + (i + 1) + '] Échec création : ' + e.message);
+                item.status = 'failed';
+                item.progress = 'Échec';
+                state.failed++;
+                renderQueue();
+                updateGenerateBtn();
+            }
+
+            state.selectedStyle = savedStyle;
+
+            if (i < state.queue.length - 1 && !state.stopRequested) {
+                const waitSec = Math.ceil(createIntervalMs / 1000);
+                for (let r = waitSec; r > 0; r--) {
+                    if (state.stopRequested) break;
+                    const nextNum = i + 2;
+                    setStatus('Respiration créative… — Image ' + nextNum + '/' + state.queue.length + ' dans ' + r + 's');
+                    await sleep(1000);
+                }
+            }
+        }
+
+        if (pollingTasks.length > 0) {
+            setStatus('Finalisation…');
+            await Promise.allSettled(pollingTasks);
+        }
+    } catch (e) {
+        log('Erreur globale : ' + e.message);
+    }
+
+    const totalElapsed = (Date.now() - totalStart) / 1000;
+    const summary = state.stopRequested
+        ? 'Arrêté — ' + state.completed + '/' + state.queue.length + ' vidéos'
+        : '✦ ' + state.completed + '/' + state.queue.length + ' vidéos créées en ' + formatEta(totalElapsed) + ' ✦';
+
+    log(summary);
+    setStatus(summary);
+    await sleep(4000);
+    setStatus(null);
+
+    state.isRunning = false;
+    state.stopRequested = false;
+    document.getElementById('stop-btn').classList.remove('visible');
+    updateGenerateBtn();
+
+    showToast(state.completed + ' vidéo' + (state.completed > 1 ? 's' : '') + ' créée' + (state.completed > 1 ? 's' : ''), 'success');
+}
+
+function stopGeneration() {
+    if (!state.isRunning) return;
+    state.stopRequested = true;
+    log('Arrêt demandé par l\'utilisateur');
+    setStatus('Arrêt en cours…');
+}
+
+// ══════════════════════════════════════════════════════════════════
+// RANDOM ALL
+// ══════════════════════════════════════════════════════════════════
+function randomizeAll() {
+    const randomStyle = randomItem(ALL_STYLES);
+    state.selectedStyle = randomStyle.id;
+    state.activeCategory = randomStyle.cat;
+
+    const randomPreset = randomItem(PROMPT_PRESETS);
+    document.getElementById('main-prompt').value = randomPreset.text;
+    state.mainPrompt = randomPreset.text;
+
+    const framings = ['random', 'close', 'medium', 'wide'];
+    const intensities = ['subtle', 'moderate', 'strong'];
+    const cameras = ['slow', 'medium', 'fast'];
+    const transforms = ['preserve', 'stylize'];
+
+    state.framing = randomItem(framings);
+    state.intensity = randomItem(intensities);
+    state.cameraSpeed = randomItem(cameras);
+    state.transformMode = randomItem(transforms);
+
+    document.getElementById('framing-select').value = state.framing;
+    document.getElementById('intensity-select').value = state.intensity;
+    document.getElementById('camera-select').value = state.cameraSpeed;
+    document.getElementById('transform-mode').value = state.transformMode;
+
+    renderCategoryTabs();
+    renderStyles();
+    updateSelectedInfo();
+
+    showToast('🎲 Surprise totale : ' + randomStyle.emoji + ' ' + randomStyle.name, 'success', 2500);
+}
+
+// ══════════════════════════════════════════════════════════════════
+// INITIALISATION
+// ══════════════════════════════════════════════════════════════════
+(function init() {
+    const saveBtn = document.getElementById('api-save-btn');
+    if (saveBtn) saveBtn.addEventListener('click', saveApiKey);
+
+    const stopBtn = document.getElementById('stop-btn');
+    if (stopBtn) stopBtn.addEventListener('click', stopGeneration);
+
+    const apiInput = document.getElementById('api-key-input');
+    if (apiInput) {
+        apiInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') { e.preventDefault(); saveApiKey(); }
+        });
+    }
+
+    document.querySelectorAll('[data-toggle]').forEach(header => {
+        header.addEventListener('click', () => {
+            document.getElementById(header.dataset.toggle).classList.toggle('open');
+        });
+    });
+
+    const uploadZone = document.getElementById('upload-zone');
+    const fileInput = document.getElementById('file-input');
+    if (uploadZone && fileInput) {
+        uploadZone.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', e => {
+            handleFiles(e.target.files);
+            fileInput.value = '';
+        });
+    }
+
+    const mainPrompt = document.getElementById('main-prompt');
+    if (mainPrompt) {
+        mainPrompt.addEventListener('input', e => {
+            state.mainPrompt = e.target.value;
+        });
+    }
+
+    const searchBar = document.getElementById('style-search');
+    if (searchBar) {
+        searchBar.addEventListener('input', e => {
+            state.searchQuery = e.target.value;
+            renderStyles();
+        });
+    }
+
+    const randomBtn = document.getElementById('random-all-btn');
+    if (randomBtn) randomBtn.addEventListener('click', randomizeAll);
+
+    const durationSelect = document.getElementById('duration-select');
+    if (durationSelect) {
+        durationSelect.addEventListener('change', e => {
+            state.durationFrames = parseInt(e.target.value, 10);
+        });
+    }
+    const framingSelect = document.getElementById('framing-select');
+    if (framingSelect) {
+        framingSelect.addEventListener('change', e => { state.framing = e.target.value; });
+    }
+    const intensitySelect = document.getElementById('intensity-select');
+    if (intensitySelect) {
+        intensitySelect.addEventListener('change', e => { state.intensity = e.target.value; });
+    }
+    const cameraSelect = document.getElementById('camera-select');
+    if (cameraSelect) {
+        cameraSelect.addEventListener('change', e => { state.cameraSpeed = e.target.value; });
+    }
+    const transformMode = document.getElementById('transform-mode');
+    if (transformMode) {
+        transformMode.addEventListener('change', e => { state.transformMode = e.target.value; });
+    }
+
+    const generateBtn = document.getElementById('generate-btn');
+    if (generateBtn) generateBtn.addEventListener('click', startGeneration);
+
+    const wakeBtn = document.getElementById('wake-toggle-btn');
+    if (wakeBtn) wakeBtn.addEventListener('click', toggleWakeLock);
+
+    try {
+        const saved = localStorage.getItem(WAKE_LOCK_PREF);
+        wakeLockEnabled = saved === '1';
+    } catch (e) {}
+
+    if (wakeLockEnabled) {
+        activateWakeLock().then(() => updateWakeStatus());
+    }
+
+    updateApiPanel();
+    updateTimingDisplay();
+    updateWakeStatus();
+    renderPromptPresets();
+    renderCategoryTabs();
+    renderStyles();
+    updateSelectedInfo();
+    renderImages();
+    renderQueue();
+
+    log('MEGA STUDIO prêt — ' + ALL_STYLES.length + ' styles disponibles.');
+    console.log('🎨 Styles totaux :', ALL_STYLES.length);
+    console.log('📂 Catégories :', CATEGORIES.length);
+})();
+</script>
+
+</body>
+</html>
